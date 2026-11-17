@@ -968,7 +968,6 @@ class SiteBuilder:
 
         homepage_limit = int(self.site.get("homepage_limit", 60))
         category_limit = int(self.site.get("category_limit", 80))
-        featured = [i for i in combined if i["category"] == "drag"][:6]
         street_items = [i for i in combined if i["category"] == "street"]
         street_videos = [i for i in street_items if i.get("video_id")]
         grudge_board = []
@@ -978,12 +977,15 @@ class SiteBuilder:
                 continue
             seen_urls.add(item["url"])
             grudge_board.append(item)
-            if len(grudge_board) >= 9:
+            if len(grudge_board) >= 6:
                 break
-        on_the_cushion = [i for i in combined if i["category"] == "dirt"][:6]
-        originals_recent = [i for i in posts if i in combined]
-        originals_recent = self.sort_items(originals_recent)[:4]
-        home_items = combined[:homepage_limit]
+        # Street leads the grid even when other series published more this cycle.
+        # Cap the reserved street block so the rest of the card still has room
+        # for drag, dirt, and the big series.
+        street_home = [i for i in combined if i["category"] == "street"][:24]
+        taken = {id(i) for i in street_home}
+        other_home = [i for i in combined if id(i) not in taken]
+        home_items = (street_home + other_home)[:homepage_limit]
         sources = sorted({i["source"] for i in home_items})
 
         desc = self.site["description"]
@@ -991,10 +993,7 @@ class SiteBuilder:
             "index.html",
             "index.html",
             current="home",
-            featured=featured,
             grudge_board=grudge_board,
-            on_the_cushion=on_the_cushion,
-            originals_recent=originals_recent,
             items=home_items,
             sources=sources,
             page_title=f"{self.site['site_name']} — {self.site['tagline']}",
@@ -1069,6 +1068,7 @@ class SiteBuilder:
                 current=cat["id"],
                 category=cat,
                 items=cat_items,
+                sources=sorted({i["source"] for i in cat_items}),
                 page_title=f"{cat['name']} — {self.site['site_name']}",
                 page_description=cat.get("description") or f"{cat['name']} headlines on {self.site['site_name']}.",
             )

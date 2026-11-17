@@ -1,89 +1,48 @@
 {% extends "base.html" %}
+{% block body_attrs %} class="layout-news"{% endblock %}
 {% block content %}
-<section class="hero">
-  <div class="wrap">
-    <p class="kicker">Street first. Then the track.</p>
-    <h1>{{ site.site_name }}</h1>
-    <p class="lede">{{ site.tagline }} 1320Video, Drag Lens, no-prep, and the grudge board lead the homepage. Drag strip, dirt, and the big series follow.</p>
-  </div>
-</section>
+<div class="wrap news-shell" data-news-shell data-page-kind="home" data-page-category="all">
+  {% include "partials/sidebar.html" %}
 
-<div class="wrap">
-  {% if grudge_board %}
-  <div class="section-head">
-    <h2>Grudge Board</h2>
-    <a href="{{ url_for('category/street/index.html') }}">Callouts &amp; beef</a>
-  </div>
-  <div class="grid featured-grid">
-    {% for item in grudge_board %}
-      {% include "partials/card.html" %}
-    {% endfor %}
-  </div>
-  {% endif %}
+  <div class="news-main">
+    <header class="news-intro">
+      <p class="kicker">Street first. Then the track.</p>
+      <h1>{{ site.site_name }}</h1>
+      <p class="lede">{{ site.tagline }} 1320Video, Drag Lens, no-prep, and the grudge board lead the homepage. Drag strip, dirt, and the big series follow.</p>
+    </header>
 
-  {% if featured %}
-  <div class="section-head">
-    <h2>On the Tree</h2>
-    <a href="{{ url_for('category/drag/index.html') }}">All the drag racing</a>
-  </div>
-  <div class="grid">
-    {% for item in featured %}
-      {% include "partials/card.html" %}
-    {% endfor %}
-  </div>
-  {% endif %}
+    {% if grudge_board %}
+    <div class="featured-block" data-featured-block>
+      <div class="section-head">
+        <h2>Grudge Board</h2>
+        <a href="{{ url_for('category/street/index.html') }}">Callouts &amp; beef</a>
+      </div>
+      <div class="grid featured-grid">
+        {% for item in grudge_board %}
+          {% include "partials/card.html" %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
-  {% if on_the_cushion %}
-  <div class="section-head">
-    <h2>On the Cushion</h2>
-    <a href="{{ url_for('category/dirt/index.html') }}">All the dirt</a>
-  </div>
-  <div class="grid">
-    {% for item in on_the_cushion %}
-      {% include "partials/card.html" %}
-    {% endfor %}
-  </div>
-  {% endif %}
+    <div class="section-head">
+      <h2>What's Running</h2>
+      <p data-result-count>{{ items|length }} headline{% if items|length != 1 %}s{% endif %}</p>
+    </div>
+    <p class="category-page-link is-hidden" data-category-page-link>
+      <a href="{{ url_for('index.html') }}">View all <span data-category-page-name></span> stories</a>
+    </p>
 
-  {% if originals_recent %}
-  <div class="section-head">
-    <h2>We Wrote This</h2>
-  </div>
-  <div class="grid">
-    {% for item in originals_recent %}
-      {% include "partials/card.html" %}
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <div class="section-head">
-    <h2>What's Running</h2>
-    <p data-result-count>{{ items|length }} headlines</p>
-  </div>
-
-  <div class="filters" role="group" aria-label="Filter headlines">
-    <button type="button" class="filter-btn is-active" data-filter="all" aria-pressed="true">All</button>
-    {% for cat in categories %}
-    <button type="button" class="filter-btn" data-filter="{{ cat.id }}" aria-pressed="false">{{ cat.nav }}</button>
-    {% endfor %}
-    <button type="button" class="filter-btn" data-filter="engines" aria-pressed="false">Engines / Tech</button>
-    <label class="visually-hidden" for="source-filter">Source</label>
-    <select id="source-filter" class="source-select" data-source-filter>
-      <option value="all">All sources</option>
-      {% for src in sources %}
-      <option value="{{ src }}">{{ src }}</option>
+    <div class="grid news-grid" data-headline-list>
+      {% for item in items %}
+        {% include "partials/card.html" %}
       {% endfor %}
-    </select>
+    </div>
+    <p class="empty{% if items %} is-hidden{% endif %}" data-filter-empty>No headlines match these filters.</p>
+    {% if not items %}
+    <p class="empty">Nothing here yet. Run <code>python build.py</code> to pull the feeds.</p>
+    {% endif %}
   </div>
-
-  <div class="grid" data-headline-list>
-    {% for item in items %}
-      {% include "partials/card.html" %}
-    {% endfor %}
-  </div>
-  {% if not items %}
-  <p class="empty">Nothing here yet. Run <code>python build.py</code> to pull the feeds.</p>
-  {% endif %}
 </div>
 {% endblock %}
 {% block scripts %}

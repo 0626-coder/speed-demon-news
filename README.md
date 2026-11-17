@@ -8,10 +8,9 @@ The site is built for someone with little daily spare time: fetch headlines auto
 
 ## What you get
 
-- Homepage of latest headlines, with **Street / Grudge (Grudge Board)** first as the featured section — 1320Video, Drag Lens, no-prep, and grudge — then **On the Tree** (drag / NHRA), then **On the Cushion** (dirt). Nav is Latest, **Live**, then those categories.
-- Category pages and filters for Drag Racing, Street / Grudge, Dirt, NASCAR, Formula 1, IndyCar, IMSA, plus an Engines / Tech tag
-- Dirt class filters (sprint 410/360/305, late models, modifieds, midgets/USAC, micros, stock cars, karts)
-- Source filter on the homepage
+- Homepage of latest headlines, with **Street / Grudge (Grudge Board)** featured first and street stories ranked first in the main grid. The top nav is just **Latest**, **Live** (red dot), and **About**. Categories live in a left sidebar.
+- News pages (home and every category) use a full-width layout: sticky sidebar filters on the left, a multi-column headline grid on the right. On phones, filters collapse into a **Filters** button that opens a drawer.
+- Sidebar filters: Category (Street / Grudge first, then Drag, Dirt, NASCAR, F1, IndyCar, IMSA — also real pages for SEO and no-JS), Dirt class (sprints, late models, modifieds, midgets/USAC, micros, stock cars, karts), Source, Type (Articles / Videos / Our stories), Date (Today, This week, All), a search box, and an Engines / Tech toggle. Filtering is client-side.
 - YouTube items as cards with a thumbnail and channel name; click to lazy-load a YouTube embed, or open the video on YouTube
 - Original articles mixed into the homepage and the matching category; recap drafts stay unpublished until approved
 - **Live page** with lazy-loaded YouTube livestream players for 1320video, DRAG LENS, Lens 660, and BoostedGT, plus official where-to-watch links for NHRA, DIRTVision, and FloRacing
@@ -236,7 +235,7 @@ Each of these was checked with curl and returned real feed items before being ad
 
 **Street / Grudge (featured, first after Latest) — "Grudge Board"**
 
-The homepage hero and the first nav item after Latest.
+The homepage featured section. Street / Grudge is the first category in the sidebar, right after All.
 
 - 1320video (YouTube, channel ID `UC0PXqiud6dbwOAk8RvslgpQ`) — https://www.youtube.com/feeds/videos.xml?channel_id=UC0PXqiud6dbwOAk8RvslgpQ — also https://www.youtube.com/@1320video
 - 1320Video Blog — https://1320video.com/blogs/news.atom

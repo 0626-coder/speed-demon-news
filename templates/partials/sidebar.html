@@ -1,0 +1,77 @@
+<div class="filters-bar">
+  <button type="button" class="filters-toggle" data-filters-toggle aria-expanded="false" aria-controls="news-filters">
+    Filters
+    <span class="filter-count is-hidden" data-active-filter-count></span>
+  </button>
+</div>
+
+<div class="filters-backdrop" data-filters-backdrop hidden></div>
+
+<aside class="news-sidebar" id="news-filters" data-news-filters aria-label="Filters">
+  <div class="sidebar-head">
+    <h2>Filters</h2>
+    <button type="button" class="filters-close" data-filters-close aria-label="Close filters">&times;</button>
+  </div>
+
+  <div class="filter-group">
+    <label for="headline-search">Search</label>
+    <input type="search" id="headline-search" class="filter-search" data-search-filter placeholder="Cars, names, tracks…" autocomplete="off">
+  </div>
+
+  <div class="filter-group" role="group" aria-labelledby="filter-cat-label">
+    <h3 id="filter-cat-label">Category</h3>
+    <nav class="filter-cats" aria-label="News categories">
+      <a class="filter-link{% if current == 'home' %} is-active{% endif %}" href="{{ url_for('index.html') }}" data-filter="all"{% if current == 'home' %} aria-current="page"{% endif %}>All</a>
+      {% for cat in categories %}
+      <a class="filter-link{% if current == cat.id %} is-active{% endif %}" href="{{ url_for('category/' + cat.id + '/index.html') }}" data-filter="{{ cat.id }}"{% if current == cat.id %} aria-current="page"{% endif %}>{{ cat.nav }}</a>
+      {% endfor %}
+    </nav>
+    <label class="filter-check">
+      <input type="checkbox" data-engines-filter value="engines">
+      Engines / Tech
+    </label>
+  </div>
+
+  <div class="filter-group{% if current != 'dirt' %} is-hidden{% endif %}" role="group" aria-labelledby="filter-dirt-label" data-dirt-group>
+    <h3 id="filter-dirt-label">Dirt class</h3>
+    <div class="filter-pills">
+      <button type="button" class="filter-btn is-active" data-class-filter="all" aria-pressed="true">All classes</button>
+      {% for cls in dirt_classes %}
+        {% if not cls.parent %}
+        <button type="button" class="filter-btn" data-class-filter="{{ cls.id }}" aria-pressed="false">{{ cls.name }}</button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="filter-group" role="group" aria-labelledby="filter-type-label">
+    <h3 id="filter-type-label">Type</h3>
+    <div class="filter-pills">
+      <button type="button" class="filter-btn is-active" data-type-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="filter-btn" data-type-filter="article" aria-pressed="false">Articles</button>
+      <button type="button" class="filter-btn" data-type-filter="video" aria-pressed="false">Videos</button>
+      <button type="button" class="filter-btn" data-type-filter="original" aria-pressed="false">Our stories</button>
+    </div>
+  </div>
+
+  <div class="filter-group" role="group" aria-labelledby="filter-date-label">
+    <h3 id="filter-date-label">Date</h3>
+    <div class="filter-pills">
+      <button type="button" class="filter-btn is-active" data-date-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="filter-btn" data-date-filter="today" aria-pressed="false">Today</button>
+      <button type="button" class="filter-btn" data-date-filter="week" aria-pressed="false">This week</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label for="source-filter">Source</label>
+    <select id="source-filter" class="source-select" data-source-filter>
+      <option value="all">All sources</option>
+      {% for src in sources|default([]) %}
+      <option value="{{ src }}">{{ src }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <button type="button" class="filter-reset is-hidden" data-filter-reset>Clear filters</button>
+</aside>

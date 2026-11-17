@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="{{ page_description }}">
   <link rel="stylesheet" href="{{ url_for('static/css/style.css') }}">
 </head>
-<body>
+<body{% block body_attrs %}{% endblock %}>
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-inner">
@@ -34,9 +34,6 @@
       <nav class="nav" aria-label="Primary">
         <a href="{{ url_for('index.html') }}" {% if current == 'home' %}aria-current="page"{% endif %}>Latest</a>
         <a class="nav-live" href="{{ url_for('live/index.html') }}" {% if current == 'live' %}aria-current="page"{% endif %}><span class="live-dot" aria-hidden="true"></span>Live</a>
-        {% for cat in categories %}
-        <a href="{{ url_for('category/' + cat.id + '/index.html') }}" {% if current == cat.id %}aria-current="page"{% endif %}>{{ cat.nav }}</a>
-        {% endfor %}
         {% if merch_enabled %}
         <a href="{{ url_for('merch/index.html') }}" {% if current == 'merch' %}aria-current="page"{% endif %}>Merch</a>
         {% endif %}
@@ -52,6 +49,11 @@
       <div>
         <p><strong>{{ site.site_name }}</strong> — headlines with the source on the card, plus the occasional original recap. No trackers, no ads in this draft.</p>
         <p>Excerpts come from public RSS/Atom feeds. The full story stays at the original site or channel.</p>
+        <nav class="footer-cats" aria-label="Categories">
+          {% for cat in categories %}
+          <a href="{{ url_for('category/' + cat.id + '/index.html') }}">{{ cat.nav }}</a>{% if not loop.last %} · {% endif %}
+          {% endfor %}
+        </nav>
       </div>
       <p>
         <a href="{{ url_for('live/index.html') }}">Live</a> ·

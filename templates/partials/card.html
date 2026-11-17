@@ -1,4 +1,4 @@
-<article class="card {% if item.video_id %}card-video{% endif %}" data-card data-category="{{ item.category }}" data-source="{{ item.source }}" data-tags="{{ item.tags|join(' ') }}">
+<article class="card {% if item.video_id %}card-video{% endif %}" data-card data-category="{{ item.category }}" data-source="{{ item.source }}" data-tags="{{ item.tags|join(' ') }}" data-type="{% if item.video_id %}video{% elif item.is_original %}original{% else %}article{% endif %}" data-original="{{ 'true' if item.is_original else 'false' }}" data-date="{{ item.date_iso or '' }}">
   {% if item.video_id and item.thumbnail %}
   <div class="thumb-wrap">
     <button type="button" class="thumb-btn" data-video="{{ item.video_id }}" aria-label="Play video: {{ item.title }}">
