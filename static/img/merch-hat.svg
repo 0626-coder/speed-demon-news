@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-hidden="true">
+  <rect width="400" height="400" fill="#12100c"/>
+  <rect x="0" y="0" width="400" height="7" fill="#e31c25"/>
+  <rect x="0" y="7" width="400" height="7" fill="#ffb000"/>
+  <path d="M110 214
+           C112 150 150 112 200 112
+           C250 112 288 150 290 214
+           Z"
+        fill="#16130f" stroke="#ffb000" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M92 226
+           C120 250 280 250 308 226
+           C300 242 250 258 200 258
+           C150 258 100 242 92 226 Z"
+        fill="#1d1914" stroke="#ffb000" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M110 214 L290 214" stroke="#5a4e38" stroke-width="3"/>
+  <text x="200" y="188" text-anchor="middle"
+        font-family="Arial Narrow, Arial, Helvetica, sans-serif"
+        font-size="28" font-weight="800" letter-spacing="2" fill="#f4efe4">SD</text>
+  <text x="200" y="326" text-anchor="middle"
+        font-family="Arial Narrow, Arial, Helvetica, sans-serif"
+        font-size="14" font-weight="700" letter-spacing="3" fill="#ffb000">HAT</text>
+</svg>

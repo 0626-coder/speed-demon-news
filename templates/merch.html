@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero merch-hero">
+  <div class="wrap">
+    <p class="kicker">{{ merch.kicker }}</p>
+    <h1>{{ merch.headline }}</h1>
+    <p class="lede">{{ merch.lede }}</p>
+  </div>
+</section>
+
+<div class="wrap merch-page">
+  <div class="section-head">
+    <h2>The gear</h2>
+  </div>
+  {% if merch['items'] %}
+  <div class="grid merch-grid">
+    {% for item in merch['items'] %}
+    <article class="card merch-card{% if item.placeholder %} is-placeholder{% endif %}">
+      <div class="merch-art">
+        <img src="{{ item.image }}" alt="{{ item.image_alt }}">
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="pill">{{ item.type_label }}</span>
+          {% if item.placeholder %}<span class="pill pill-soon">Coming soon</span>{% endif %}
+        </div>
+        <h3>
+          {% if item.buy_url and not item.placeholder %}
+          <a href="{{ item.buy_url }}">{{ item.name }}</a>
+          {% else %}
+          {{ item.name }}
+          {% endif %}
+        </h3>
+        {% if item.price and not item.placeholder %}
+        <p class="merch-price">{{ item.price }}</p>
+        {% endif %}
+        {% if item.buy_url and not item.placeholder %}
+        <p class="card-foot"><a class="merch-buy" href="{{ item.buy_url }}">Get this one</a></p>
+        {% elif item.placeholder %}
+        <p class="excerpt">Not for sale yet. Design still in the works.</p>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No items listed yet. Add them in <code>content/merch.yaml</code>.</p>
+  {% endif %}
+  {% if merch.note %}
+  <p class="merch-note">{{ merch.note }}</p>
+  {% endif %}
+</div>
+{% endblock %}

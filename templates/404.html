@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap prose">
+  <p class="kicker">Red light</p>
+  <h1>Page not found</h1>
+  <p>That URL is not on this site. Head back to the <a href="{{ url_for('index.html') }}">latest headlines</a>.</p>
+</div>
+{% endblock %}

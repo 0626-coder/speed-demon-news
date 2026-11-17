@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <p class="kicker">{{ category.kicker or ('Featured beat' if category.featured else 'The series board') }}</p>
+    <h1>{{ category.section_title or category.name }}</h1>
+    <p class="lede">{{ category.description }}</p>
+  </div>
+</section>
+<div class="wrap">
+  <div class="section-head">
+    <h2>{{ items|length }} headline{% if items|length != 1 %}s{% endif %}</h2>
+    <a href="{{ url_for('index.html') }}">Back to what's running</a>
+  </div>
+  {% if category.id == 'dirt' %}
+  <div class="filters" role="group" aria-label="Filter by dirt class">
+    <button type="button" class="filter-btn is-active" data-class-filter="all" aria-pressed="true">All classes</button>
+    {% for cls in dirt_classes %}
+    <button type="button" class="filter-btn" data-class-filter="{{ cls.id }}" aria-pressed="false">{{ cls.name }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="grid" data-headline-list>
+    {% for item in items %}
+      {% include "partials/card.html" %}
+    {% endfor %}
+  </div>
+  {% if not items %}
+  <p class="empty">Nothing in this lane yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static/js/filters.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+# Final site name: Speed-Demon News
+site_name: "Speed-Demon News"
+site_name_is_placeholder: false
+tagline: "Street and grudge up front. Then the strip, the dirt, and the big series."
+description: >-
+  A no-frills racing news pile. Street, no-prep, and grudge lead the card,
+  with drag racing and NHRA, dirt of every class, and the big-series stuff
+  right behind. Headlines and short excerpts from public feeds. Original
+  recaps only when we can stick to the source. No trackers.
+# Public URL used by production builds (GitHub Actions, or ./build.sh --prod).
+# A plain ./build.sh / python build.py still writes links for
+# http://127.0.0.1:8080/ so the local preview keeps working.
+base_url: "https://0626-coder.github.io/speed-demon-news"
+base_path: "/speed-demon-news"
+language: "en"
+author: "Speed-Demon News"
+timezone: "America/Chicago"
+homepage_limit: 72
+category_limit: 100
+feed_max_items_default: 10
+excerpt_chars: 220
+
+# Merch stays hidden until shirts and hats are ready.
+# Set enabled: true, then rebuild, to put /merch/ in the nav, footer, and sitemap.
+# Preview without enabling: ./build.sh --preview-merch --output /tmp/sdn-merch-preview
+merch:
+  enabled: false

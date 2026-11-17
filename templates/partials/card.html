@@ -1,0 +1,35 @@
+<article class="card {% if item.video_id %}card-video{% endif %}" data-card data-category="{{ item.category }}" data-source="{{ item.source }}" data-tags="{{ item.tags|join(' ') }}">
+  {% if item.video_id and item.thumbnail %}
+  <div class="thumb-wrap">
+    <button type="button" class="thumb-btn" data-video="{{ item.video_id }}" aria-label="Play video: {{ item.title }}">
+      <img src="{{ item.thumbnail }}" alt="" loading="lazy" width="480" height="270">
+      <span class="play-badge" aria-hidden="true">Play</span>
+    </button>
+  </div>
+  {% endif %}
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="pill pill-{{ item.category }}">{{ item.category_name }}</span>
+      {% if item.is_original %}<span class="pill pill-original">Original</span>{% endif %}
+      {% if 'engines' in item.tags %}<span class="pill pill-engines">Engines / Tech</span>{% endif %}
+      {% for cls in dirt_classes %}
+        {% if cls.id in item.tags and cls.id not in ['sprint', 'late-model', 'modified'] %}
+          <span class="pill pill-dirt">{{ cls.name }}</span>
+        {% endif %}
+      {% endfor %}
+      <time datetime="{{ item.date_iso or '' }}">{{ item.date_display }}</time>
+    </div>
+    <h3><a href="{{ item.href }}" {% if not item.is_original %}rel="noopener noreferrer" target="_blank"{% endif %}>{{ item.title }}</a></h3>
+    {% if item.excerpt %}<p class="excerpt">{{ item.excerpt }}</p>{% endif %}
+    <div class="card-foot">
+      <span class="source">{{ item.source }}</span>
+      {% if item.is_original %}
+      <a class="outlink" href="{{ item.href }}">Read it here</a>
+      {% elif item.video_id %}
+      <a class="outlink" href="{{ item.href }}" rel="noopener noreferrer" target="_blank">Watch on YouTube</a>
+      {% else %}
+      <a class="outlink" href="{{ item.href }}" rel="noopener noreferrer" target="_blank">Read at the source</a>
+      {% endif %}
+    </div>
+  </div>
+</article>

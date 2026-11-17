@@ -1,0 +1,307 @@
+# Public RSS/Atom feeds. YouTube channel RSS can 404/500 intermittently;
+# the builder retries those URLs. Disable a feed with enabled: false.
+
+categories:
+  - id: street
+    name: Street / Grudge
+    nav: Street / Grudge
+    featured: true
+    section_title: Grudge Board
+    kicker: Callouts & Beef
+    description: No-prep, grudge, and street-car racing from public video channels and news pages. This is the lead beat on the front page.
+  - id: drag
+    name: Drag Racing / NHRA
+    nav: Drag Racing
+    featured: false
+    section_title: On the Tree
+    kicker: Lights Out
+    description: NHRA, sportsman classes, and drag racing — right after the street and grudge board.
+  - id: dirt
+    name: Dirt Track
+    nav: Dirt
+    featured: false
+    section_title: On the Cushion
+    kicker: On the Cushion
+    description: Sprint cars, late models, modifieds, midgets, micros, stock cars, and karts — every dirt class we can find a public feed for.
+  - id: nascar
+    name: NASCAR
+    nav: NASCAR
+    featured: false
+    section_title: The Big Oval
+    kicker: Stock cars
+    description: Cup, Xfinity, and Truck Series headlines from public racing feeds.
+  - id: f1
+    name: Formula 1
+    nav: Formula 1
+    featured: false
+    section_title: Lights Out, Worldwide
+    kicker: Formula 1
+    description: Formula 1 news from the official feed and independent motorsport desks.
+  - id: indycar
+    name: IndyCar
+    nav: IndyCar
+    featured: false
+    section_title: Open Wheel, U.S.
+    kicker: IndyCar
+    description: NTT IndyCar Series and related open-wheel coverage.
+  - id: imsa
+    name: IMSA / Sportscar
+    nav: IMSA
+    featured: false
+    section_title: Endurance
+    kicker: IMSA
+    description: IMSA, endurance, and sportscar racing.
+
+tags:
+  - id: engines
+    name: Engines / Tech
+    description: Engine and technical stories, including Chevy and sportsman-relevant coverage.
+
+# Dirt class filters (applied by keywords, plus some feed defaults).
+dirt_classes:
+  - id: sprint-410
+    name: Sprint 410
+    parent: sprint
+  - id: sprint-360
+    name: Sprint 360
+    parent: sprint
+  - id: sprint-305
+    name: Sprint 305
+    parent: sprint
+  - id: sprint
+    name: Sprint Cars
+  - id: late-model-super
+    name: Super Late Models
+    parent: late-model
+  - id: late-model-crate
+    name: Crate Late Models
+    parent: late-model
+  - id: late-model
+    name: Late Models
+  - id: modified-ump
+    name: UMP Modifieds
+    parent: modified
+  - id: modified-imca
+    name: IMCA Modifieds
+    parent: modified
+  - id: modified-bigblock
+    name: Big Block Modifieds
+    parent: modified
+  - id: modified
+    name: Modifieds
+  - id: midget
+    name: Midgets / USAC
+  - id: micro
+    name: Micro Sprints
+  - id: stock-car
+    name: Stock Cars
+  - id: kart
+    name: Karts
+
+feeds:
+  # --- Drag Racing / NHRA (featured) ---
+  - name: Drag Illustrated
+    url: https://dragillustrated.com/feed
+    category: drag
+    enabled: true
+    max_items: 10
+  - name: Competition Plus
+    url: https://competitionplus.com/feed
+    category: drag
+    enabled: true
+    max_items: 10
+  - name: Dragzine
+    url: https://www.dragzine.com/feed
+    category: drag
+    enabled: true
+    max_items: 10
+  - name: BangShift
+    url: https://bangshift.com/feed
+    category: drag
+    enabled: true
+    max_items: 10
+  - name: EngineLabs
+    url: https://www.enginelabs.com/feed
+    category: drag
+    tags: [engines]
+    enabled: true
+    max_items: 10
+  - name: Chevy Hardcore
+    url: https://www.chevyhardcore.com/feed
+    category: drag
+    tags: [engines]
+    enabled: true
+    max_items: 10
+
+  # --- Street / Grudge ---
+  - name: 1320video
+    url: https://www.youtube.com/feeds/videos.xml?channel_id=UC0PXqiud6dbwOAk8RvslgpQ
+    category: street
+    type: youtube
+    channel_id: UC0PXqiud6dbwOAk8RvslgpQ
+    enabled: true
+    max_items: 8
+  - name: 1320Video Blog
+    url: https://1320video.com/blogs/news.atom
+    category: street
+    enabled: true
+    max_items: 8
+  - name: DRAG LENS
+    url: https://www.youtube.com/feeds/videos.xml?channel_id=UCNgmfWYknbb-qhzQXQkHuLQ
+    category: street
+    type: youtube
+    channel_id: UCNgmfWYknbb-qhzQXQkHuLQ
+    enabled: true
+    max_items: 8
+  - name: Lens 660
+    url: https://www.youtube.com/feeds/videos.xml?channel_id=UC_5FQcJ-B9sbm7NCc86KTYA
+    category: street
+    type: youtube
+    channel_id: UC_5FQcJ-B9sbm7NCc86KTYA
+    enabled: true
+    max_items: 8
+  - name: Grudge Races
+    url: https://grudgeraces.com/feed
+    category: street
+    enabled: true
+    max_items: 10
+  - name: No Prep Racing
+    url: https://www.noprep.com/feed
+    category: street
+    enabled: true
+    max_items: 8
+  - name: BoostedGT
+    url: https://www.youtube.com/feeds/videos.xml?channel_id=UCBuSoDJ-ICag5E2Pjlck8zA
+    category: street
+    type: youtube
+    channel_id: UCBuSoDJ-ICag5E2Pjlck8zA
+    enabled: true
+    max_items: 6
+
+  # --- Dirt Track ---
+  - name: World of Outlaws
+    url: https://worldofoutlaws.com/feed
+    category: dirt
+    tags: [sprint, late-model]
+    enabled: true
+    max_items: 10
+  - name: DIRTcar Racing
+    url: https://dirtcar.com/category/news/feed
+    category: dirt
+    enabled: true
+    max_items: 10
+  - name: Super DIRTcar Series
+    url: https://superdirtcarseries.com/feed
+    category: dirt
+    tags: [modified, modified-bigblock]
+    enabled: true
+    max_items: 8
+  - name: Racing News Dirt
+    url: https://racingnews.co/category/dirt/feed
+    category: dirt
+    enabled: true
+    max_items: 10
+  - name: SPEED SPORT Dirt Late Models
+    url: https://speedsport.com/news/short-track/dirt-late-models/feed
+    category: dirt
+    tags: [late-model]
+    enabled: true
+    max_items: 8
+  - name: SPEED SPORT Short Track
+    url: https://speedsport.com/news/short-track/feed
+    category: dirt
+    rematch_category: true
+    enabled: true
+    max_items: 8
+  - name: IMCA
+    url: https://www.imca.com/feed
+    category: dirt
+    tags: [modified-imca, modified]
+    enabled: true
+    max_items: 8
+  - name: American Sprint Car Series
+    url: https://ascsracing.com/feed
+    category: dirt
+    tags: [sprint, sprint-360]
+    enabled: true
+    max_items: 8
+  - name: STL Racing
+    url: https://stlracing.com/feed
+    category: dirt
+    enabled: true
+    max_items: 8
+  - name: Eldora Speedway
+    url: https://www.eldoraspeedway.com/feed
+    category: dirt
+    enabled: true
+    max_items: 8
+  - name: eKartingNews
+    url: https://www.ekartingnews.com/feed
+    category: dirt
+    tags: [kart]
+    enabled: true
+    max_items: 6
+
+  # --- NASCAR ---
+  - name: Frontstretch
+    url: https://www.frontstretch.com/feed/
+    category: nascar
+    enabled: true
+    max_items: 10
+    rematch_category: true
+  - name: Motorsport.com NASCAR
+    url: https://www.motorsport.com/rss/category/nascar/news/
+    category: nascar
+    enabled: true
+    max_items: 10
+  - name: Crash.net NASCAR
+    url: https://www.crash.net/rss/nascar
+    category: nascar
+    enabled: true
+    max_items: 10
+
+  # --- Formula 1 ---
+  - name: Formula 1
+    url: https://www.formula1.com/en/latest/all.xml
+    category: f1
+    enabled: true
+    max_items: 10
+  - name: Motorsport.com F1
+    url: https://www.motorsport.com/rss/f1/news/
+    category: f1
+    enabled: true
+    max_items: 10
+  - name: RaceFans
+    url: https://www.racefans.net/category/formula-1/feed
+    category: f1
+    enabled: true
+    max_items: 10
+
+  # --- IndyCar ---
+  - name: Motorsport.com IndyCar
+    url: https://www.motorsport.com/rss/indycar/news/
+    category: indycar
+    enabled: true
+    max_items: 10
+  - name: RACER IndyCar
+    url: https://racer.com/indycar/feed
+    category: indycar
+    enabled: true
+    max_items: 10
+  - name: Crash.net IndyCar
+    url: https://www.crash.net/rss/indycar
+    category: indycar
+    enabled: true
+    max_items: 10
+
+  # --- IMSA / Sportscar ---
+  - name: Motorsport.com IMSA
+    url: https://www.motorsport.com/rss/imsa/news/
+    category: imsa
+    enabled: true
+    max_items: 10
+  - name: Sportscar365
+    url: https://sportscar365.com/feed
+    category: imsa
+    enabled: true
+    max_items: 10

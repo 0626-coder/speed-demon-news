@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="wrap article">
+  <header>
+    <p class="kicker">Original article</p>
+    <h1 class="page-title">{{ post.title }}</h1>
+    <p class="card-meta">
+      <span class="pill pill-{{ post.category }}">{{ post.category_name }}</span>
+      <span class="pill pill-original">Original</span>
+      <time datetime="{{ post.date_iso }}">{{ post.date_display }}</time>
+    </p>
+    {% if post.summary %}<p class="lede">{{ post.summary }}</p>{% endif %}
+  </header>
+  {% if post.image_url %}
+  <img class="article-hero-img" src="{{ post.image_url }}" alt="{{ post.image_alt or post.title }}">
+  {% endif %}
+  <div class="article-body">
+    {{ post.html | safe }}
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,43 @@
+# Speed-Demon News merch catalog.
+# Add a row when a shirt or hat is ready to sell. The merch page stays
+# hidden until merch.enabled is true in site.yaml.
+#
+# Fields:
+#   name:        Product name. Use "Shirt design coming soon" /
+#                "Hat design coming soon" for placeholders.
+#   type:        shirt | hat | other
+#   image:       Optional. A filename in content/images/, a path relative
+#                to the project root, or a full https:// URL. Leave blank
+#                to use the default shirt or hat placeholder art.
+#   price:       Optional. A string like "$28" or a number (shown as $28).
+#                Leave blank on placeholders — prices are not shown then.
+#   buy_url:     Optional. Checkout or product-page link. Leave blank
+#                until that item is actually for sale.
+#   placeholder: true for coming-soon cards (the default when buy_url is
+#                empty). Set false once the item is real and ready.
+#
+# Preview without enabling the page:
+#   ./build.sh --preview-merch --output /tmp/sdn-merch-preview
+
+kicker: "Speed-Demon News gear"
+headline: "Coming soon"
+lede: >-
+  Shirts and hats are in the works. Nothing is for sale yet — these are
+  placeholders until the designs are ready to drop.
+note: >-
+  Designs drop soon. When the first shirts and hats are done, they'll
+  show up here with a way to buy them.
+
+items:
+  - name: "Shirt design coming soon"
+    type: shirt
+    image:
+    price:
+    buy_url:
+    placeholder: true
+  - name: "Hat design coming soon"
+    type: hat
+    image:
+    price:
+    buy_url:
+    placeholder: true

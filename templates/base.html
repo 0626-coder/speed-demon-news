@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="{{ site.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page_title }}</title>
+  <meta name="description" content="{{ page_description }}">
+  <meta name="robots" content="{{ robots | default('index,follow') }}">
+  <link rel="canonical" href="{{ canonical }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static/img/favicon.svg') }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.site_name }} headlines" href="{{ url_for('feed.xml') }}">
+  <meta property="og:type" content="{{ og_type | default('website') }}">
+  <meta property="og:site_name" content="{{ site.site_name }}">
+  <meta property="og:title" content="{{ page_title }}">
+  <meta property="og:description" content="{{ page_description }}">
+  <meta property="og:url" content="{{ canonical }}">
+  <meta property="og:image" content="{{ og_image | default(absolute('static/img/mark.svg')) }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ page_title }}">
+  <meta name="twitter:description" content="{{ page_description }}">
+  <link rel="stylesheet" href="{{ url_for('static/css/style.css') }}">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{ url_for('index.html') }}">
+        <img src="{{ url_for('static/img/mark.svg') }}" width="36" height="36" alt="">
+        <span>
+          <span class="brand-name">{{ site.site_name }}</span>
+          <span class="brand-tag">{{ site.tagline }}</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="{{ url_for('index.html') }}" {% if current == 'home' %}aria-current="page"{% endif %}>Latest</a>
+        {% for cat in categories %}
+        <a href="{{ url_for('category/' + cat.id + '/index.html') }}" {% if current == cat.id %}aria-current="page"{% endif %}>{{ cat.nav }}</a>
+        {% endfor %}
+        {% if merch_enabled %}
+        <a href="{{ url_for('merch/index.html') }}" {% if current == 'merch' %}aria-current="page"{% endif %}>Merch</a>
+        {% endif %}
+        <a href="{{ url_for('about.html') }}" {% if current == 'about' %}aria-current="page"{% endif %}>About</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div>
+        <p><strong>{{ site.site_name }}</strong> — headlines with the source on the card, plus the occasional original recap. No trackers, no ads in this draft.</p>
+        <p>Excerpts come from public RSS/Atom feeds. The full story stays at the original site or channel.</p>
+      </div>
+      <p>
+        <a href="{{ url_for('feed.xml') }}">RSS</a> ·
+        <a href="{{ url_for('sitemap.xml') }}">Sitemap</a> ·
+        {% if merch_enabled %}<a href="{{ url_for('merch/index.html') }}">Merch</a> ·{% endif %}
+        <a href="{{ url_for('about.html') }}">About</a>
+      </p>
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
