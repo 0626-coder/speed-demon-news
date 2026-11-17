@@ -40,6 +40,7 @@ POSTS = ROOT / "content" / "posts"
 FEED_CACHE = ROOT / ".feed-cache"
 IMAGES = ROOT / "content" / "images"
 MERCH = ROOT / "content" / "merch.yaml"
+LIVE = ROOT / "content" / "live.yaml"
 
 # Same browser UA used when the feeds were verified with curl.
 # A few outlets (notably Frontstretch) return 403 to unknown bot UAs.
@@ -48,6 +49,8 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 TIMEOUT = 20
+
+YOUTUBE_CHANNEL_RE = re.compile(r"^UC[A-Za-z0-9_-]{22}$")
 
 ENGINE_RE = re.compile(
     r"\b(engine|engines|engine-tech|small-block|big-block|crate engine|cylinder head|"
@@ -460,6 +463,7 @@ class SiteBuilder:
         slug: str | None = None,
         video_id: str = "",
         thumbnail: str = "",
+        channel_id: str = "",
     ) -> dict:
         if category not in self.category_map:
             category = "drag"
@@ -481,6 +485,7 @@ class SiteBuilder:
             "slug": slug,
             "video_id": video_id,
             "thumbnail": thumbnail,
+            "channel_id": channel_id,
         }
 
     def collect_feed_items(self) -> list[dict]:
@@ -513,6 +518,7 @@ class SiteBuilder:
                     if category == "dirt" or cfg.get("category") == "dirt":
                         tags = dirt_class_tags(text, tags)
                     video_id, thumbnail = "", ""
+                    channel_id = str(cfg.get("channel_id") or "")
                     if cfg.get("type") == "youtube" or is_youtube_feed(cfg.get("url", "")) or "youtube.com/watch" in link or "youtube.com/shorts" in link:
                         video_id, thumbnail = youtube_meta(entry, link)
                     items.append(
@@ -526,6 +532,7 @@ class SiteBuilder:
                             tags=tags,
                             video_id=video_id,
                             thumbnail=thumbnail,
+                            channel_id=channel_id,
                         )
                     )
                     count += 1
@@ -709,6 +716,148 @@ class SiteBuilder:
             "mtime": mtime,
         }
 
+
+    def _youtube_channel_urls(self, channel_id: str, handle: str) -> dict[str, str]:
+        handle = (handle or "").strip().lstrip("@")
+        if handle:
+            base = f"https://www.youtube.com/@{handle}"
+        elif channel_id:
+            base = f"https://www.youtube.com/channel/{channel_id}"
+        else:
+            base = ""
+        return {
+            "channel_url": base,
+            "live_url": f"{base}/live" if base else "",
+            "streams_url": f"{base}/streams" if base else "",
+        }
+
+    def _latest_for_channel(self, items: list[dict], channel_id: str, name: str, limit: int = 3) -> list[dict]:
+        matches: list[dict] = []
+        seen: set[str] = set()
+        for item in items:
+            if not item.get("video_id"):
+                continue
+            cid_ok = bool(channel_id) and item.get("channel_id") == channel_id
+            name_ok = bool(name) and item.get("source") == name
+            if not (cid_ok or name_ok):
+                continue
+            key = item.get("video_id") or item.get("url") or ""
+            if key and key in seen:
+                continue
+            if key:
+                seen.add(key)
+            matches.append(item)
+        return self.sort_items(matches)[:limit]
+
+    def _prepare_live_channel(self, raw: dict, items: list[dict]) -> dict | None:
+        if not raw or raw.get("enabled") is False:
+            return None
+        name = str(raw.get("name") or "").strip()
+        channel_id = str(raw.get("youtube_channel_id") or raw.get("channel_id") or "").strip()
+        if channel_id and not YOUTUBE_CHANNEL_RE.match(channel_id):
+            print(f"  WARN  live.yaml: skipping {name or channel_id} (invalid YouTube channel id)")
+            return None
+        handle = str(raw.get("handle") or "").strip()
+        category = str(raw.get("category") or "street")
+        if category not in self.category_map:
+            category = "street"
+        watch_url = str(raw.get("watch_url") or "").strip()
+        if not name:
+            return None
+        if not channel_id and not watch_url:
+            print(f"  WARN  live.yaml: skipping {name} (need youtube_channel_id or watch_url)")
+            return None
+        urls = self._youtube_channel_urls(channel_id, handle)
+        latest = self._latest_for_channel(items, channel_id, name) if channel_id or name else []
+        poster = ""
+        for vid in latest:
+            if vid.get("thumbnail"):
+                poster = vid["thumbnail"]
+                break
+        section = str(raw.get("section") or ("street" if category == "street" else "other")).strip().lower()
+        return {
+            "name": name,
+            "youtube_channel_id": channel_id,
+            "handle": handle.lstrip("@"),
+            "category": category,
+            "category_name": self.category_map[category]["name"],
+            "section": section,
+            "note": str(raw.get("note") or "").strip(),
+            "watch_url": watch_url,
+            "poster": poster,
+            "latest": latest,
+            **urls,
+        }
+
+    def _prepare_watch_card(self, raw: dict) -> dict | None:
+        if not raw or raw.get("enabled") is False:
+            return None
+        name = str(raw.get("name") or "").strip()
+        if not name:
+            return None
+        category = str(raw.get("category") or "drag")
+        if category not in self.category_map:
+            category = "drag"
+        links = []
+        for link in raw.get("links") or []:
+            if not isinstance(link, dict):
+                continue
+            label = str(link.get("label") or "").strip()
+            url = str(link.get("url") or "").strip()
+            if not label or not url:
+                continue
+            if not url.startswith("https://"):
+                print(f"  WARN  live.yaml: skipped non-https link for {name}: {url}")
+                continue
+            links.append({"label": label, "url": url})
+        return {
+            "name": name,
+            "category": category,
+            "category_name": self.category_map[category]["name"],
+            "section": str(raw.get("section") or "track").strip().lower(),
+            "note": str(raw.get("note") or "").strip(),
+            "links": links,
+        }
+
+    def load_live(self, items: list[dict]) -> dict:
+        raw = load_yaml(LIVE) if LIVE.exists() else {}
+        page = raw.get("page") or {}
+        street: list[dict] = []
+        other: list[dict] = []
+        for entry in list(raw.get("channels") or []) + list(raw.get("other_channels") or []):
+            if not isinstance(entry, dict):
+                continue
+            channel = self._prepare_live_channel(entry, items)
+            if not channel:
+                continue
+            # other_channels list always goes to the other section unless
+            # the entry itself says section: street.
+            in_other_list = entry in (raw.get("other_channels") or [])
+            section = channel["section"]
+            if section == "street" and not in_other_list:
+                street.append(channel)
+            else:
+                other.append(channel)
+        watch_cards = []
+        for entry in raw.get("watch") or []:
+            if not isinstance(entry, dict):
+                continue
+            card = self._prepare_watch_card(entry)
+            if card:
+                watch_cards.append(card)
+        default_lede = (
+            "Street and grudge streams first. Track racing that lives on TV "
+            "or a paid app follows, with official links only."
+        )
+        return {
+            "kicker": str(page.get("kicker") or "They're live. Or they will be."),
+            "headline": str(page.get("headline") or "Live"),
+            "lede": str(page.get("lede") or default_lede),
+            "street_channels": street,
+            "other_channels": other,
+            "watch_cards": watch_cards,
+        }
+
     def write(self, rel: str, content: str | bytes, binary: bool = False) -> None:
         path = self.outdir / rel
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -858,6 +1007,19 @@ class SiteBuilder:
             page_title=f"About {self.site['site_name']}",
             page_description=f"About {self.site['site_name']}: a lightweight racing news desk with drag racing first and other series alongside it.",
         )
+        live = self.load_live(combined)
+        self.render(
+            "live.html",
+            "live/index.html",
+            current="live",
+            live=live,
+            page_title=f"Live — {self.site['site_name']}",
+            page_description=(
+                "Street and grudge livestreams from 1320Video, DRAG LENS, "
+                "Lens 660, and BoostedGT, plus official where-to-watch links "
+                "for NHRA, DIRTVision, and FloRacing."
+            ),
+        )
         merch = self.load_merch()
         if self.build_merch:
             merch_ctx = dict(
@@ -878,6 +1040,7 @@ class SiteBuilder:
         )
         sitemap_pages: list[tuple[str, datetime | None]] = [
             ("index.html", datetime.now(self.tz)),
+            ("live/index.html", datetime.now(self.tz)),
             ("about.html", None),
         ]
         if self.merch_enabled:

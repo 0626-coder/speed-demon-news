@@ -1,0 +1,56 @@
+<article class="card live-channel-card{% if channel.youtube_channel_id %} card-video{% endif %}">
+  {% if channel.youtube_channel_id %}
+  <div class="thumb-wrap">
+    <button type="button" class="thumb-btn live-load-btn" data-live-channel="{{ channel.youtube_channel_id }}" aria-label="Watch live or latest from {{ channel.name }}">
+      {% if channel.poster %}
+      <img src="{{ channel.poster }}" alt="" loading="lazy" width="480" height="270">
+      {% else %}
+      <span class="live-load-fallback" aria-hidden="true"></span>
+      {% endif %}
+      <span class="play-badge live-badge" aria-hidden="true">Watch live / latest</span>
+    </button>
+  </div>
+  {% endif %}
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="pill pill-{{ channel.category }}">{{ channel.category_name }}</span>
+    </div>
+    <h3>
+      {% if channel.channel_url %}
+      <a href="{{ channel.channel_url }}" rel="noopener noreferrer" target="_blank">{{ channel.name }}</a>
+      {% else %}
+      {{ channel.name }}
+      {% endif %}
+    </h3>
+    {% if channel.note %}<p class="excerpt">{{ channel.note }}</p>{% endif %}
+    <div class="live-channel-links">
+      {% if channel.live_url %}
+      <a class="outlink" href="{{ channel.live_url }}" rel="noopener noreferrer" target="_blank">YouTube live</a>
+      {% endif %}
+      {% if channel.streams_url %}
+      <a class="outlink" href="{{ channel.streams_url }}" rel="noopener noreferrer" target="_blank">Past streams</a>
+      {% endif %}
+      {% if channel.watch_url and not channel.youtube_channel_id %}
+      <a class="outlink" href="{{ channel.watch_url }}" rel="noopener noreferrer" target="_blank">Watch</a>
+      {% endif %}
+    </div>
+    {% if channel.latest %}
+    <p class="live-latest-label">Latest from the feed</p>
+    <ul class="live-latest">
+      {% for vid in channel.latest %}
+      <li>
+        {% if vid.thumbnail %}
+        <img src="{{ vid.thumbnail }}" alt="" loading="lazy" width="120" height="68">
+        {% endif %}
+        <span>
+          <a href="{{ vid.href }}" rel="noopener noreferrer" target="_blank">{{ vid.title }}</a>
+          {% if vid.date_display %}<time datetime="{{ vid.date_iso or '' }}">{{ vid.date_display }}</time>{% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% elif channel.youtube_channel_id %}
+    <p class="live-latest-empty">No recent videos in this feed pull. The channel's streams page is the next stop.</p>
+    {% endif %}
+  </div>
+</article>

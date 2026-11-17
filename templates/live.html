@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero live-hero">
+  <div class="wrap">
+    <p class="kicker">
+      <span class="live-dot" aria-hidden="true"></span>
+      {{ live.kicker }}
+    </p>
+    <h1>{{ live.headline }}</h1>
+    <p class="lede">{{ live.lede }}</p>
+  </div>
+</section>
+
+<div class="wrap live-page">
+  <div class="section-head">
+    <h2>Street / Grudge livestreams</h2>
+  </div>
+  {% if live.street_channels %}
+  <div class="live-channels">
+    {% for channel in live.street_channels %}
+      {% include "partials/live_channel.html" %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No street or grudge channels listed yet. Add them in <code>content/live.yaml</code>.</p>
+  {% endif %}
+
+  <div class="section-head">
+    <h2>Track — where to watch</h2>
+  </div>
+  <p class="live-track-intro">These series stream on TV or a paid service, so there is no player on this page. The links go to the official homes. Schedules stay on those sites — we are not inventing dates.</p>
+  {% if live.watch_cards %}
+  <div class="live-watch-grid">
+    {% for card in live.watch_cards %}
+    <article class="card watch-card watch-card-{{ card.category }}">
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="pill pill-{{ card.category }}">{{ card.category_name }}</span>
+        </div>
+        <h3>{{ card.name }}</h3>
+        {% if card.note %}<p class="excerpt">{{ card.note }}</p>{% endif %}
+        {% if card.links %}
+        <ul class="watch-links">
+          {% for link in card.links %}
+          <li><a href="{{ link.url }}" rel="noopener noreferrer" target="_blank">{{ link.label }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No official watch links listed yet.</p>
+  {% endif %}
+
+  {% if live.other_channels %}
+  <div class="section-head">
+    <h2>Other live channels</h2>
+  </div>
+  <div class="live-channels">
+    {% for channel in live.other_channels %}
+      {% include "partials/live_channel.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static/js/filters.js') }}" defer></script>
+{% endblock %}

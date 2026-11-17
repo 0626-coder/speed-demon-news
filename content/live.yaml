@@ -1,0 +1,152 @@
+# Live page sources for Speed-Demon News.
+# Edit this file, then rebuild (`./build.sh` locally, or push to main for the live site).
+#
+# YouTube channels:
+#   name, youtube_channel_id (required for the player), optional handle, category, note
+#   section: street  — first block (Street / Grudge livestreams)
+#   section: other   — "Other live channels" at the bottom
+#   The page lazy-loads:
+#     https://www.youtube-nocookie.com/embed/live_stream?channel=CHANNEL_ID
+#   and, when the channel is also in feeds.yaml, lists its 3 latest videos.
+#   Each card also links to the channel's YouTube /live and /streams pages.
+#
+# Official watch cards (no embeds — paid or TV streams):
+#   name, category, note, and a links: list of {label, url}
+#   Put these under `watch:`. They show in the Track section.
+#
+# A channel can use watch_url instead of youtube_channel_id (link-only card).
+# Disable anything with enabled: false without deleting it.
+
+page:
+  kicker: They're live. Or they will be.
+  headline: Live
+  lede: >-
+    Street and grudge streams lead this page. When a channel is broadcasting,
+    the player loads right here after you tap in. When they're dark, YouTube
+    will say so — their latest videos sit underneath, and you can jump to the
+    channel's live or past-streams page. Track racing that lives on TV or a
+    paid app is next, with official "where to watch" links only. We do not
+    embed those streams, and we do not invent race dates.
+
+channels:
+  - name: 1320video
+    youtube_channel_id: UC0PXqiud6dbwOAk8RvslgpQ
+    handle: 1320video
+    category: street
+    section: street
+    note: Street, no-prep, and grudge coverage from 1320Video.
+    enabled: true
+  - name: DRAG LENS
+    youtube_channel_id: UCNgmfWYknbb-qhzQXQkHuLQ
+    handle: DragLens
+    category: street
+    section: street
+    note: Drag and grudge video from DRAG LENS.
+    enabled: true
+  - name: Lens 660
+    youtube_channel_id: UC_5FQcJ-B9sbm7NCc86KTYA
+    handle: Lens660
+    category: street
+    section: street
+    note: The other "660 Drag Lens" channel — both are included so nothing gets missed.
+    enabled: true
+  - name: BoostedGT
+    youtube_channel_id: UCBuSoDJ-ICag5E2Pjlck8zA
+    handle: BoostedGT
+    category: street
+    section: street
+    note: Ryan Martin's BoostedGT channel.
+    enabled: true
+
+# Extra YouTube (or link-only) channels. Leave empty until you have another one to add.
+# Example:
+#   - name: Example Channel
+#     youtube_channel_id: UCxxxxxxxxxxxxxxxxxxxxxx
+#     handle: ExampleHandle
+#     category: street
+#     section: other
+#     note: Why it's here.
+#     enabled: true
+other_channels: []
+
+# Official where-to-watch cards. Links were checked in November 2026.
+# FloRacing becomes an official NHRA national-event stream in 2027, not 2026,
+# so it is not listed on the NHRA card.
+watch:
+  - name: NHRA
+    category: drag
+    section: track
+    enabled: true
+    note: >-
+      The 2026 Mission Foods Drag Racing Series national events air on FOX or
+      FS1, and stream on the FOX One app. We cannot put those broadcasts on
+      this page. NHRA.tv is NHRA's official stream for the national events
+      (paid season or event pass — see NHRA.tv for current pricing). Select
+      Lucas Oil Drag Racing Series divisionals also stream free on NHRA.tv
+      and the official NHRA YouTube page. Race dates live on NHRA's schedule,
+      not here.
+    links:
+      - label: 2026 NHRA schedule
+        url: https://www.nhra.com/schedule/2026
+      - label: Official FOX / FS1 / FOX One TV schedule
+        url: https://www.nhra.com/news/2026/nhra-fox-sports-announce-2026-nhra-tv-schedule-75th-anniversary-season
+      - label: Stream on FOX One
+        url: https://www.foxone.com/
+      - label: FOX One FAQ (FOX Sports)
+        url: https://www.foxsports.com/fox-sports-fox-one-faqs
+      - label: NHRA.tv official stream
+        url: https://www.nhra.tv/
+      - label: Free 2026 NHRA.tv and YouTube streaming notes
+        url: https://www.nhra.com/news/2026/nhra-releases-free-2026-streaming-schedule-nhratv-nhra-youtube-page
+      - label: Official NHRA YouTube
+        url: https://www.youtube.com/@NHRA
+  - name: World of Outlaws / DIRTVision
+    category: dirt
+    section: track
+    enabled: true
+    note: >-
+      DIRTVision is the official live-streaming home for the World of Outlaws
+      NOS Energy Drink Sprint Cars and Late Models, plus the Super DIRTcar
+      Series, American Sprint Car Series, DIRTcar Summer Nationals, and
+      weekly dirt tracks on that service. Those streams are paid, so they
+      are not embedded here. Schedules stay on the official sites.
+    links:
+      - label: Watch on DIRTVision
+        url: https://www.dirtvision.com/live
+      - label: DIRTVision schedule
+        url: https://schedule.dirtvision.com/
+      - label: World of Outlaws — how to watch
+        url: https://about.worldofoutlaws.com/how-to-watch
+      - label: World of Outlaws schedule
+        url: https://worldofoutlaws.com/schedule/
+      - label: Sprint Car schedule
+        url: https://worldofoutlaws.com/sprintcars/schedule/
+      - label: Late Model schedule
+        url: https://worldofoutlaws.com/latemodels/schedule/
+  - name: FloRacing
+    category: dirt
+    section: track
+    enabled: true
+    note: >-
+      FloRacing is the official streaming home for several dirt series we
+      cover, including the Lucas Oil Late Model Dirt Series presented by
+      FloRacing, Interstate Batteries High Limit Racing, and USAC. It is a
+      paid service, so there is no player on this page. Check FloRacing and
+      each series' official schedule for what is on and when.
+    links:
+      - label: FloRacing (official site)
+        url: https://www.floracing.com/
+      - label: Lucas Oil Late Model Dirt Series
+        url: https://www.lucasdirt.com/
+      - label: Lucas Oil Late Model schedule
+        url: https://www.lucasdirt.com/schedules/
+      - label: High Limit Racing
+        url: https://www.highlimitracing.com/
+      - label: High Limit Racing schedule
+        url: https://www.highlimitracing.com/schedules/
+      - label: How to watch USAC
+        url: https://www.usacracing.com/media
+      - label: USAC events and results
+        url: https://www.usacracing.com/events-and-results
+      - label: USAC combined national schedule
+        url: https://www.usacracing.com/event-calendar/combined-national-schedule

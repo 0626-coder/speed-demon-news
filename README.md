@@ -8,12 +8,13 @@ The site is built for someone with little daily spare time: fetch headlines auto
 
 ## What you get
 
-- Homepage of latest headlines, with **Street / Grudge (Grudge Board)** first as the featured section — 1320Video, Drag Lens, no-prep, and grudge — then **On the Tree** (drag / NHRA), then **On the Cushion** (dirt). Nav follows the same order after Latest.
+- Homepage of latest headlines, with **Street / Grudge (Grudge Board)** first as the featured section — 1320Video, Drag Lens, no-prep, and grudge — then **On the Tree** (drag / NHRA), then **On the Cushion** (dirt). Nav is Latest, **Live**, then those categories.
 - Category pages and filters for Drag Racing, Street / Grudge, Dirt, NASCAR, Formula 1, IndyCar, IMSA, plus an Engines / Tech tag
 - Dirt class filters (sprint 410/360/305, late models, modifieds, midgets/USAC, micros, stock cars, karts)
 - Source filter on the homepage
 - YouTube items as cards with a thumbnail and channel name; click to lazy-load a YouTube embed, or open the video on YouTube
 - Original articles mixed into the homepage and the matching category; recap drafts stay unpublished until approved
+- **Live page** with lazy-loaded YouTube livestream players for 1320video, DRAG LENS, Lens 660, and BoostedGT, plus official where-to-watch links for NHRA, DIRTVision, and FloRacing
 - About page, basic SEO (title, meta description, Open Graph), `sitemap.xml`, `robots.txt`, and an RSS feed of this site’s aggregated items
 - Merch page for shirts and hats, hidden until you flip `merch.enabled` on in `site.yaml`
 - Dark, mobile-friendly, a little grittier, no trackers
@@ -37,6 +38,7 @@ racing-news-site/
     posts/              Original articles (Markdown + front matter)
     images/             Optional local images referenced by posts
     merch.yaml          Merch catalog (shirts and hats). Page stays hidden until enabled
+    live.yaml           Live page channels and official where-to-watch links
   templates/            Jinja HTML templates
   static/               CSS, tiny filter script, logo
   public/               Generated site (safe to delete; rebuild recreates it)
@@ -184,6 +186,50 @@ Edit `content/merch.yaml`. Each item uses:
 Kicker, headline, lede, and the “designs drop soon” note at the bottom of the page are also in that file. Rebuild after you edit it.
 
 
+## Live page
+
+The public Live page is at `/live/` (nav item **Live**, right after Latest, with a red pulsing dot). It is in the footer and in `sitemap.xml`.
+
+### Street / Grudge livestreams (first)
+
+The first section embeds YouTube live players for 1320video, DRAG LENS, Lens 660, and BoostedGT. Nothing loads from YouTube until you click **Watch live / latest** on a card. The player uses the privacy-enhanced embed:
+
+```
+https://www.youtube-nocookie.com/embed/live_stream?channel=CHANNEL_ID
+```
+
+If the channel is not live, YouTube's player shows an offline or upcoming state. Under each card are the channel's three latest videos from the current feed pull, plus links to that channel's YouTube `/live` and `/streams` pages.
+
+### Track — where to watch (second)
+
+NHRA national-event coverage is on FOX or FS1 and the FOX One app for the 2026 Mission Foods season. NHRA.tv is the official stream for those national events (paid). Some Lucas Oil Drag Racing Series divisionals stream free on NHRA.tv and the official NHRA YouTube page. Those streams are not embedded. The page links the official 2026 schedule and the official announcements instead of listing dates.
+
+Dirt streaming is the same idea: official links only, no embeds, no invented dates.
+
+- **DIRTVision** — official live home for World of Outlaws Sprint Cars and Late Models, Super DIRTcar Series, ASCS, and DIRTcar Summer Nationals
+- **FloRacing** — official streaming home for the Lucas Oil Late Model Dirt Series presented by FloRacing, High Limit Racing, and USAC
+
+FloRacing's NHRA national-event deal starts in **2027**, so it is not listed as a 2026 NHRA stream.
+
+### Add or change a channel
+
+Edit `content/live.yaml` and rebuild. YouTube channels use:
+
+| Field | What it is |
+| --- | --- |
+| `name` | Channel name as it should appear |
+| `youtube_channel_id` | The `UC…` id (required for the player). Must be a 24-character YouTube channel id |
+| `handle` | Optional `@handle` without the at-sign, used for `/live` and `/streams` links |
+| `category` | One of the site categories, usually `street` |
+| `section` | `street` (first block) or `other` (Other live channels) |
+| `note` | Short, factual blurb |
+| `watch_url` | Optional. Use this instead of a channel id for a link-only card |
+| `enabled` | `false` to hide without deleting |
+
+Official TV or paid-stream cards go under `watch:` with `name`, `category`, `note`, and a `links:` list of `{label, url}` (https only). Put extra YouTube channels in `other_channels:` (same fields as `channels:`).
+
+
+
 ## Feeds in this draft
 
 Each of these was checked with curl and returned real feed items before being added. YouTube's public channel RSS (`https://www.youtube.com/feeds/videos.xml?channel_id=...`) can 404 or 500 intermittently; the builder retries those feeds. The build script drops a feed for that run if it still fails, and keeps the rest.
@@ -297,7 +343,7 @@ A GitHub Actions workflow named **Build and deploy** (`.github/workflows/pages.y
 - when started by hand (`workflow_dispatch`)
 - on a schedule three times a day: `0 13,18,23 * * *` UTC, which is 7am / 12pm / 5pm America/Chicago during CST, and 8am / 1pm / 6pm during CDT
 
-The merch page stays hidden until `merch.enabled` is true in `site.yaml`. Draft posts in `content/posts` (`draft: true`) stay in the repo source but are not rendered on the site.
+The Live page is public at `/live/`. The merch page stays hidden until `merch.enabled` is true in `site.yaml`. Draft posts in `content/posts` (`draft: true`) stay in the repo source but are not rendered on the site.
 
 No custom domain is attached. A domain can be added later at a registrar if you want one; nothing has been purchased.
 

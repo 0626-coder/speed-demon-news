@@ -33,6 +33,7 @@
       </a>
       <nav class="nav" aria-label="Primary">
         <a href="{{ url_for('index.html') }}" {% if current == 'home' %}aria-current="page"{% endif %}>Latest</a>
+        <a class="nav-live" href="{{ url_for('live/index.html') }}" {% if current == 'live' %}aria-current="page"{% endif %}><span class="live-dot" aria-hidden="true"></span>Live</a>
         {% for cat in categories %}
         <a href="{{ url_for('category/' + cat.id + '/index.html') }}" {% if current == cat.id %}aria-current="page"{% endif %}>{{ cat.nav }}</a>
         {% endfor %}
@@ -53,6 +54,7 @@
         <p>Excerpts come from public RSS/Atom feeds. The full story stays at the original site or channel.</p>
       </div>
       <p>
+        <a href="{{ url_for('live/index.html') }}">Live</a> ·
         <a href="{{ url_for('feed.xml') }}">RSS</a> ·
         <a href="{{ url_for('sitemap.xml') }}">Sitemap</a> ·
         {% if merch_enabled %}<a href="{{ url_for('merch/index.html') }}">Merch</a> ·{% endif %}

@@ -66,6 +66,26 @@
 
   // Lazy YouTube embed — nothing loads from YouTube until a thumbnail is clicked.
   document.addEventListener("click", function (event) {
+    const liveBtn = event.target.closest("[data-live-channel]");
+    if (liveBtn) {
+      event.preventDefault();
+      const channelId = liveBtn.getAttribute("data-live-channel") || "";
+      // Standard YouTube channel IDs are 24 characters starting with UC.
+      if (!/^UC[A-Za-z0-9_-]{22}$/.test(channelId)) return;
+      const wrap = liveBtn.closest(".thumb-wrap") || liveBtn.parentElement;
+      const iframe = document.createElement("iframe");
+      iframe.src =
+        "https://www.youtube-nocookie.com/embed/live_stream?channel=" +
+        encodeURIComponent(channelId);
+      iframe.title = "YouTube live stream";
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+      wrap.innerHTML = "";
+      wrap.appendChild(iframe);
+      return;
+    }
     const btn = event.target.closest("[data-video]");
     if (!btn) return;
     event.preventDefault();
