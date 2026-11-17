@@ -44,12 +44,10 @@ KNOWN_CREDITS = {
 }
 
 CATEGORY_TAGS = {
-    "street": ["StreetRacing", "GrudgeRacing", "NoPrep", "DragRacing"],
+    "street": ["OutlawRacing", "StreetRacing", "GrudgeRacing", "NoPrep", "DragRacing"],
     "drag": ["DragRacing", "NHRA", "Sportsman"],
     "dirt": ["DirtRacing", "ShortTrack", "DirtTrack"],
     "nascar": ["NASCAR", "StockCar"],
-    "f1": ["Formula1", "F1"],
-    "indycar": ["IndyCar", "OpenWheel"],
     "imsa": ["IMSA", "Sportscar"],
 }
 

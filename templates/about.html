@@ -6,17 +6,17 @@
   <p>{{ site.description }}</p>
 
   <h2>What's on the pile</h2>
-  <p>The front page leads with street, no-prep, and grudge — the Grudge Board, 1320Video, Drag Lens, and the rest of that scene. Drag racing and NHRA come next, then dirt of every class we can find a feed for, then NASCAR, Formula 1, IndyCar, and IMSA. Stock Eliminator, Super Stock, sportsman racing, and the engines behind them are still a home beat. They just don't own the top of the homepage anymore.</p>
-  <p>Each card shows the title, the source, the date, and a short excerpt taken from the feed — never made up, never a full article copy. Video cards show a thumbnail and the channel name, and they link out to YouTube. Click a thumbnail and the player loads here, lazy, with no trackers on the page until then.</p>
+  <p>Willseys Wonderland is the team page — our cars, our nights, and the media we upload as we go. The news pile leads with Outlaw Racing: no-prep, grudge, and street-car racing, the Grudge Board, 1320Video, DRAG LENS, and the rest of that scene. Drag racing and NHRA come next, then dirt of every class we can find a feed for, then NASCAR and IMSA. Stock Eliminator, Super Stock, sportsman racing, and the engines behind them are still a home beat. They just don't own the top of the homepage anymore.</p>
+  <p>Each card shows the title, the source, the date, and a short excerpt taken from the feed — never made up, never a full article copy. Video cards show a thumbnail and the channel name, and they link out to YouTube. Click a thumbnail and the player loads here, with no trackers on the page until then.</p>
 
   <h2>How this is supposed to run</h2>
   <p>It's a static site. One command, <code>python build.py</code> (or <code>./build.sh</code>), grabs the feeds and rebuilds the pages. A scheduled job can do that later. Original pieces live as Markdown in <code>content/posts</code>. Write one with <code>python new_post.py</code>, the local-only form (<code>python admin.py</code>), or turn a feed item into a draft recap with <code>python write_recap.py</code>. Recaps stay <code>draft: true</code> until you approve them, so they don't go live by accident.</p>
   <p>No analytics trackers, no ad networks, and no third-party scripts until you click a video.</p>
 
   <h2>Sources</h2>
-  <p>Feeds live in <code>feeds.yaml</code>. Official NHRA, NASCAR, IndyCar, and IMSA RSS endpoints didn't work (web pages, errors, or bot walls). Instagram, Facebook, and TikTok don't offer public feeds, so those pages aren't scraped. What you see here is what actually returned items. Misses are listed in the README.</p>
+  <p>Feeds live in <code>feeds.yaml</code>. Official NHRA, NASCAR, and IMSA RSS endpoints didn't work (web pages, errors, or bot walls). Instagram, Facebook, and TikTok don't offer public feeds, so those pages aren't scraped. What you see here is what actually returned items. Misses are listed in the README.</p>
 
   <h2>The name</h2>
-  <p><strong>Speed-Demon News</strong> is the name. It's the old racing shorthand for a car or a driver that just rips — and a news pile that starts in the street, then heads to the strip and the dirt. No company marks, no borrowed logos. Just the words, and a simple SD mark we drew for this site.</p>
+  <p><strong>Speed-Demon News</strong> is the name. It's the old racing shorthand for a car or a driver that just rips — and a news pile that starts with outlaw racing, then heads to the strip and the dirt. No company marks, no borrowed logos. Just the words, and a simple SD mark we drew for this site.</p>
 </div>
 {% endblock %}

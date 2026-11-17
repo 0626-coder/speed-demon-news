@@ -3,8 +3,9 @@
 
 categories:
   - id: street
-    name: Street / Grudge
-    nav: Street / Grudge
+    slug: outlaw-racing
+    name: Outlaw Racing
+    nav: Outlaw Racing
     featured: true
     section_title: Grudge Board
     kicker: Callouts & Beef
@@ -15,7 +16,7 @@ categories:
     featured: false
     section_title: On the Tree
     kicker: Lights Out
-    description: NHRA, sportsman classes, and drag racing — right after the street and grudge board.
+    description: NHRA, sportsman classes, and drag racing — right after Outlaw Racing.
   - id: dirt
     name: Dirt Track
     nav: Dirt
@@ -30,20 +31,6 @@ categories:
     section_title: The Big Oval
     kicker: Stock cars
     description: Cup, Xfinity, and Truck Series headlines from public racing feeds.
-  - id: f1
-    name: Formula 1
-    nav: Formula 1
-    featured: false
-    section_title: Lights Out, Worldwide
-    kicker: Formula 1
-    description: Formula 1 news from the official feed and independent motorsport desks.
-  - id: indycar
-    name: IndyCar
-    nav: IndyCar
-    featured: false
-    section_title: Open Wheel, U.S.
-    kicker: IndyCar
-    description: NTT IndyCar Series and related open-wheel coverage.
   - id: imsa
     name: IMSA / Sportscar
     nav: IMSA
@@ -133,8 +120,8 @@ feeds:
     enabled: true
     max_items: 10
 
-  # --- Street / Grudge ---
-  - name: 1320video
+  # --- Outlaw Racing (internal id: street; public URL /category/outlaw-racing/) ---
+  - name: 1320Video
     url: https://www.youtube.com/feeds/videos.xml?channel_id=UC0PXqiud6dbwOAk8RvslgpQ
     category: street
     type: youtube
@@ -257,40 +244,6 @@ feeds:
   - name: Crash.net NASCAR
     url: https://www.crash.net/rss/nascar
     category: nascar
-    enabled: true
-    max_items: 10
-
-  # --- Formula 1 ---
-  - name: Formula 1
-    url: https://www.formula1.com/en/latest/all.xml
-    category: f1
-    enabled: true
-    max_items: 10
-  - name: Motorsport.com F1
-    url: https://www.motorsport.com/rss/f1/news/
-    category: f1
-    enabled: true
-    max_items: 10
-  - name: RaceFans
-    url: https://www.racefans.net/category/formula-1/feed
-    category: f1
-    enabled: true
-    max_items: 10
-
-  # --- IndyCar ---
-  - name: Motorsport.com IndyCar
-    url: https://www.motorsport.com/rss/indycar/news/
-    category: indycar
-    enabled: true
-    max_items: 10
-  - name: RACER IndyCar
-    url: https://racer.com/indycar/feed
-    category: indycar
-    enabled: true
-    max_items: 10
-  - name: Crash.net IndyCar
-    url: https://www.crash.net/rss/indycar
-    category: indycar
     enabled: true
     max_items: 10
 

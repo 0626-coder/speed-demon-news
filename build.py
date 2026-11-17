@@ -41,6 +41,10 @@ FEED_CACHE = ROOT / ".feed-cache"
 IMAGES = ROOT / "content" / "images"
 MERCH = ROOT / "content" / "merch.yaml"
 LIVE = ROOT / "content" / "live.yaml"
+FOLLOW = ROOT / "content" / "follow.yaml"
+WONDERLAND_YAML = ROOT / "content" / "wonderland.yaml"
+WONDERLAND_POSTS = ROOT / "content" / "wonderland"
+WONDERLAND_MEDIA = STATIC / "wonderland"
 
 # Same browser UA used when the feeds were verified with curl.
 # A few outlets (notably Frontstretch) return 403 to unknown bot UAs.
@@ -59,8 +63,6 @@ ENGINE_RE = re.compile(
     re.I,
 )
 CATEGORY_PATTERNS = {
-    "f1": re.compile(r"\b(formula\s*1|formula\s*one|\bf1\b|grand prix)\b", re.I),
-    "indycar": re.compile(r"\b(indycar|indy 500|indy nxt|indianapolis 500)\b", re.I),
     "nascar": re.compile(r"\b(nascar|cup series|xfinity|craftsman truck)\b", re.I),
     "imsa": re.compile(r"\b(imsa|weathertech|le mans|wec|sportscars?|sports cars?)\b", re.I),
     "dirt": re.compile(r"\b(world of outlaws|sprint car|late model|dirt track|dirt racing)\b", re.I),
@@ -81,6 +83,26 @@ def slugify(value: str) -> str:
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     value = re.sub(r"[^a-zA-Z0-9]+", "-", value).strip("-").lower()
     return value or "post"
+
+
+CATEGORY_ALIASES = {
+    "outlaw-racing": "street",
+    "outlaw": "street",
+    "street-grudge": "street",
+    "street_racing": "street",
+}
+
+PLATFORM_ORDER = ["youtube", "x", "instagram", "facebook", "tiktok"]
+PLATFORM_LABELS = {
+    "youtube": "YouTube",
+    "x": "X",
+    "twitter": "X",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+}
+
+YOUTUBE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 
 
 def strip_html(raw: str) -> str:
@@ -392,6 +414,8 @@ class SiteBuilder:
         self.env.globals["merch_enabled"] = self.merch_enabled
         self.env.globals["url_for"] = self.url_for
         self.env.globals["absolute"] = self.absolute
+        self.env.globals["category_url"] = self.category_url
+        self.env.globals["category_slug"] = self.category_slug
         self.failed: list[tuple[str, str]] = []
         self.feed_counts: list[tuple[str, int]] = []
 
@@ -449,6 +473,21 @@ class SiteBuilder:
             rel = "/" + rel
         return self.origin() + rel
 
+    def resolve_category(self, category: str, default: str = "drag") -> str:
+        category = str(category or default).strip().lower()
+        category = CATEGORY_ALIASES.get(category, category)
+        if category not in self.category_map:
+            return default
+        return category
+
+    def category_slug(self, cat: Any) -> str:
+        if not isinstance(cat, dict):
+            cat = self.category_map.get(str(cat), {"id": cat})
+        return str(cat.get("slug") or cat.get("id") or "")
+
+    def category_url(self, cat: Any) -> str:
+        return self.url_for(f"category/{self.category_slug(cat)}/index.html")
+
     def make_item(
         self,
         *,
@@ -465,8 +504,7 @@ class SiteBuilder:
         thumbnail: str = "",
         channel_id: str = "",
     ) -> dict:
-        if category not in self.category_map:
-            category = "drag"
+        category = self.resolve_category(category, "drag")
         date_iso, date_display = format_date(dt, self.tz)
         href = self.url_for(f"articles/{slug}/index.html") if is_original and slug else url
         return {
@@ -558,7 +596,7 @@ class SiteBuilder:
                 slug = slugify(f"{slug}-{path.stem}")
             used_slugs.add(slug)
             dt = parse_date(post.get("date"), self.tz) or datetime.fromtimestamp(path.stat().st_mtime, tz=self.tz)
-            category = str(post.get("category") or "drag")
+            category = self.resolve_category(str(post.get("category") or "drag"), "drag")
             tags = list(post.get("tags") or [])
             summary = str(post.get("summary") or "").strip()
             body_html = markdown.markdown(
@@ -758,9 +796,7 @@ class SiteBuilder:
             print(f"  WARN  live.yaml: skipping {name or channel_id} (invalid YouTube channel id)")
             return None
         handle = str(raw.get("handle") or "").strip()
-        category = str(raw.get("category") or "street")
-        if category not in self.category_map:
-            category = "street"
+        category = self.resolve_category(str(raw.get("category") or "street"), "street")
         watch_url = str(raw.get("watch_url") or "").strip()
         if not name:
             return None
@@ -795,9 +831,7 @@ class SiteBuilder:
         name = str(raw.get("name") or "").strip()
         if not name:
             return None
-        category = str(raw.get("category") or "drag")
-        if category not in self.category_map:
-            category = "drag"
+        category = self.resolve_category(str(raw.get("category") or "drag"), "drag")
         links = []
         for link in raw.get("links") or []:
             if not isinstance(link, dict):
@@ -846,7 +880,7 @@ class SiteBuilder:
             if card:
                 watch_cards.append(card)
         default_lede = (
-            "Street and grudge streams first. Track racing that lives on TV "
+            "Outlaw racing streams first. Track racing that lives on TV "
             "or a paid app follows, with official links only."
         )
         return {
@@ -858,7 +892,380 @@ class SiteBuilder:
             "watch_cards": watch_cards,
         }
 
+
+    def load_follow(self) -> dict:
+        raw = load_yaml(FOLLOW) if FOLLOW.exists() else {}
+        page = raw.get("page") or {}
+        accounts: list[dict] = []
+        for entry in raw.get("accounts") or []:
+            if not isinstance(entry, dict) or entry.get("enabled") is False:
+                continue
+            name = str(entry.get("name") or "").strip()
+            if not name:
+                continue
+            category = self.resolve_category(str(entry.get("category") or "street"), "street")
+            platforms: list[dict] = []
+            raw_plats = entry.get("platforms") or {}
+            if isinstance(raw_plats, dict):
+                items = raw_plats.items()
+            elif isinstance(raw_plats, list):
+                items = []
+                for item in raw_plats:
+                    if isinstance(item, dict):
+                        items.append((item.get("key") or item.get("platform"), item.get("url")))
+            else:
+                items = []
+            seen: set[str] = set()
+            pending: dict[str, str] = {}
+            for key, url in items:
+                key = str(key or "").strip().lower()
+                if key == "twitter":
+                    key = "x"
+                url = str(url or "").strip()
+                if key not in PLATFORM_LABELS or not url.startswith("https://"):
+                    if url and not url.startswith("https://"):
+                        print(f"  WARN  follow.yaml: skipped non-https link for {name}: {url}")
+                    continue
+                pending[key] = url
+            for key in PLATFORM_ORDER:
+                if key in pending and key not in seen:
+                    platforms.append({
+                        "key": key,
+                        "label": PLATFORM_LABELS[key],
+                        "url": pending[key],
+                    })
+                    seen.add(key)
+            if not platforms:
+                print(f"  WARN  follow.yaml: skipped {name} (no verified https platform URLs)")
+                continue
+            accounts.append({
+                "name": name,
+                "category": category,
+                "category_name": self.category_map[category]["name"],
+                "note": str(entry.get("note") or "").strip(),
+                "featured": bool(entry.get("featured")),
+                "platforms": platforms,
+            })
+        groups: list[dict] = []
+        grouped: dict[str, list[dict]] = {}
+        for account in accounts:
+            grouped.setdefault(account["category"], []).append(account)
+        for cat in self.categories:
+            cat_accounts = grouped.pop(cat["id"], [])
+            if cat_accounts:
+                groups.append({
+                    "id": cat["id"],
+                    "name": cat["name"],
+                    "accounts": cat_accounts,
+                })
+        for cat_id, cat_accounts in grouped.items():
+            groups.append({
+                "id": cat_id,
+                "name": self.category_map.get(cat_id, {}).get("name") or cat_id,
+                "accounts": cat_accounts,
+            })
+        highlights = [a for a in accounts if a.get("featured")]
+        if not highlights:
+            highlights = accounts[:5]
+        return {
+            "page": {
+                "kicker": str(page.get("kicker") or "The crew").strip(),
+                "headline": str(page.get("headline") or "Follow").strip(),
+                "lede": str(page.get("lede") or "Accounts we watch, and that you can follow too.").strip(),
+            },
+            "accounts": accounts,
+            "groups": groups,
+            "highlights": highlights[:5],
+        }
+
+    def _youtube_id(self, raw: str) -> str:
+        raw = (raw or "").strip()
+        if YOUTUBE_ID_RE.match(raw):
+            return raw
+        parts = urllib.parse.urlsplit(raw)
+        host = (parts.netloc or "").lower()
+        if "youtu.be" in host:
+            candidate = parts.path.strip("/").split("/")[0]
+            return candidate if YOUTUBE_ID_RE.match(candidate) else ""
+        if "youtube.com" in host or "youtube-nocookie.com" in host:
+            q = urllib.parse.parse_qs(parts.query)
+            if q.get("v") and YOUTUBE_ID_RE.match(q["v"][0]):
+                return q["v"][0]
+            m = re.search(r"/(?:embed|shorts|live)/([A-Za-z0-9_-]{11})", parts.path)
+            if m:
+                return m.group(1)
+        return ""
+
+    def _wonderland_src_path(self, src: str) -> Path | None:
+        src = (src or "").strip()
+        if not src or src.startswith("http://") or src.startswith("https://"):
+            return None
+        candidate = Path(src)
+        if candidate.is_absolute() and candidate.exists():
+            return candidate
+        options = [
+            WONDERLAND_MEDIA / Path(src).name,
+            WONDERLAND_MEDIA / src,
+            IMAGES / Path(src).name,
+            ROOT / src,
+        ]
+        for option in options:
+            if option.exists() and option.is_file():
+                return option
+        return None
+
+    def _optimize_wonderland_image(self, src_path: Path) -> tuple[str, str]:
+        """Return (full_url, thumb_url). Resizes to max 1600px and writes a thumbnail when Pillow is available."""
+        dest_dir = self.outdir / "static" / "wonderland"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        thumb_dir = dest_dir / "thumbs"
+        suffix = src_path.suffix.lower() or ".jpg"
+        stem = src_path.stem
+        dest = dest_dir / f"{stem}{suffix}"
+        thumb = thumb_dir / f"{stem}{suffix}"
+        full_url = self.url_for(f"static/wonderland/{dest.name}")
+        thumb_url = self.url_for(f"static/wonderland/thumbs/{thumb.name}")
+        try:
+            from PIL import Image, ImageOps
+        except ImportError:
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            if src_path.resolve() != dest.resolve():
+                shutil.copy2(src_path, dest)
+            return full_url, full_url
+        try:
+            with Image.open(src_path) as im:
+                im = ImageOps.exif_transpose(im)
+                if im.mode not in {"RGB", "RGBA"}:
+                    im = im.convert("RGBA" if "A" in im.getbands() else "RGB")
+                full = im.copy()
+                full.thumbnail((1600, 1600))
+                if suffix in {".jpg", ".jpeg"} and full.mode == "RGBA":
+                    bg = Image.new("RGB", full.size, (8, 7, 5))
+                    bg.paste(full, mask=full.split()[-1])
+                    full = bg
+                    dest = dest_dir / f"{stem}.jpg"
+                    full_url = self.url_for(f"static/wonderland/{dest.name}")
+                save_kw: dict[str, Any] = {}
+                if dest.suffix.lower() in {".jpg", ".jpeg"}:
+                    save_kw = {"quality": 88, "optimize": True, "progressive": True}
+                elif dest.suffix.lower() == ".webp":
+                    save_kw = {"quality": 85, "method": 4}
+                elif dest.suffix.lower() == ".png":
+                    save_kw = {"optimize": True}
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                full.save(dest, **save_kw)
+                thumb_im = im.copy()
+                thumb_im.thumbnail((640, 640))
+                if suffix in {".jpg", ".jpeg"} and thumb_im.mode == "RGBA":
+                    bg = Image.new("RGB", thumb_im.size, (8, 7, 5))
+                    bg.paste(thumb_im, mask=thumb_im.split()[-1])
+                    thumb_im = bg
+                    thumb = thumb_dir / f"{stem}.jpg"
+                    thumb_url = self.url_for(f"static/wonderland/thumbs/{thumb.name}")
+                thumb.parent.mkdir(parents=True, exist_ok=True)
+                thumb_im.save(thumb, **save_kw)
+            return full_url, thumb_url
+        except Exception as exc:  # noqa: BLE001
+            print(f"  WARN  could not optimize {src_path.name}: {exc}")
+            if src_path.resolve() != dest.resolve():
+                shutil.copy2(src_path, dest)
+            return full_url, full_url
+
+    def _prepare_wonderland_media(self, raw: Any) -> dict | None:
+        if not isinstance(raw, dict):
+            return None
+        kind = str(raw.get("type") or "image").strip().lower()
+        src = str(raw.get("src") or raw.get("url") or "").strip()
+        if not src:
+            return None
+        caption = str(raw.get("caption") or "").strip()
+        alt = str(raw.get("alt") or caption).strip()
+        if kind in {"yt", "youtube"}:
+            video_id = self._youtube_id(src)
+            if not video_id:
+                print(f"  WARN  wonderland: skipped YouTube item with no video id ({src})")
+                return None
+            return {
+                "type": "youtube",
+                "src": f"https://www.youtube.com/watch?v={video_id}",
+                "video_id": video_id,
+                "thumb": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+                "caption": caption,
+                "alt": alt or "YouTube video",
+            }
+        if kind in {"video", "mp4"}:
+            if src.startswith("https://") or src.startswith("http://"):
+                url = src
+            else:
+                path = self._wonderland_src_path(src)
+                if not path:
+                    print(f"  WARN  wonderland: missing video file {src}")
+                    return None
+                dest_dir = self.outdir / "static" / "wonderland"
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                dest = dest_dir / path.name
+                if path.resolve() != dest.resolve():
+                    shutil.copy2(path, dest)
+                url = self.url_for(f"static/wonderland/{dest.name}")
+            poster = str(raw.get("poster") or "").strip()
+            poster_url = ""
+            if poster:
+                if poster.startswith("https://") or poster.startswith("http://"):
+                    poster_url = poster
+                else:
+                    poster_path = self._wonderland_src_path(poster)
+                    if poster_path:
+                        poster_url, _ = self._optimize_wonderland_image(poster_path)
+            mime = "video/webm" if url.lower().endswith(".webm") else "video/mp4"
+            return {
+                "type": "video",
+                "src": url,
+                "poster": poster_url,
+                "caption": caption,
+                "alt": alt,
+                "mime": mime,
+            }
+        # image (default)
+        if src.startswith("https://") or src.startswith("http://"):
+            return {
+                "type": "image",
+                "src": src,
+                "thumb": src,
+                "caption": caption,
+                "alt": alt or caption,
+            }
+        path = self._wonderland_src_path(src)
+        if not path:
+            print(f"  WARN  wonderland: missing image file {src}")
+            return None
+        full_url, thumb_url = self._optimize_wonderland_image(path)
+        return {
+            "type": "image",
+            "src": full_url,
+            "thumb": thumb_url,
+            "caption": caption,
+            "alt": alt or caption or path.stem.replace("-", " "),
+        }
+
+    def _prepare_adventure(self, raw: dict, *, body_html: str = "", slug: str | None = None) -> dict | None:
+        title = str(raw.get("title") or "").strip()
+        if not title:
+            return None
+        if raw.get("enabled") is False:
+            return None
+        media: list[dict] = []
+        for entry in raw.get("media") or []:
+            item = self._prepare_wonderland_media(entry)
+            if item:
+                media.append(item)
+        cover_src = str(raw.get("cover") or "").strip()
+        cover = ""
+        cover_thumb = ""
+        cover_alt = title
+        if cover_src:
+            cover_item = self._prepare_wonderland_media({"type": "image", "src": cover_src, "alt": title})
+            if cover_item:
+                cover = cover_item["src"]
+                cover_thumb = cover_item.get("thumb") or cover
+                cover_alt = cover_item.get("alt") or title
+        if not cover:
+            first_image = next((m for m in media if m["type"] == "image"), None)
+            if first_image:
+                cover = first_image["src"]
+                cover_thumb = first_image.get("thumb") or cover
+                cover_alt = first_image.get("alt") or title
+            else:
+                first_yt = next((m for m in media if m["type"] == "youtube"), None)
+                if first_yt:
+                    cover = first_yt.get("thumb") or ""
+                    cover_thumb = cover
+                    cover_alt = title
+        dt = parse_date(raw.get("date"), self.tz)
+        date_iso, date_display = format_date(dt, self.tz, date_only=True)
+        slug = slugify(str(slug or raw.get("slug") or title))
+        tags = [str(t).strip() for t in (raw.get("tags") or []) if str(t).strip()]
+        caption = str(raw.get("caption") or raw.get("summary") or "").strip()
+        href = ""
+        if body_html:
+            href = self.url_for(f"willseys-wonderland/{slug}/index.html")
+        return {
+            "title": title,
+            "slug": slug,
+            "date": dt,
+            "date_iso": date_iso,
+            "date_display": date_display if dt else "",
+            "caption": caption,
+            "tags": tags,
+            "media": media,
+            "cover": cover,
+            "cover_thumb": cover_thumb,
+            "cover_alt": cover_alt,
+            "body_html": body_html,
+            "href": href,
+        }
+
+    def load_wonderland(self) -> dict:
+        raw = load_yaml(WONDERLAND_YAML) if WONDERLAND_YAML.exists() else {}
+        page = raw.get("page") or {}
+        adventures: list[dict] = []
+        used_slugs: set[str] = set()
+        for entry in raw.get("adventures") or []:
+            if not isinstance(entry, dict):
+                continue
+            item = self._prepare_adventure(entry)
+            if not item:
+                continue
+            slug = item["slug"]
+            if slug in used_slugs:
+                slug = slugify(f"{slug}-entry")
+                item["slug"] = slug
+            used_slugs.add(slug)
+            adventures.append(item)
+        if WONDERLAND_POSTS.exists():
+            for path in sorted(WONDERLAND_POSTS.glob("*.md")):
+                post = frontmatter.load(path)
+                if post.get("draft") in (True, "true", "True", "yes", "1", 1):
+                    print(f"  SKIP  draft wonderland post {path.name}")
+                    continue
+                body_html = markdown.markdown(
+                    post.content or "",
+                    extensions=["extra", "sane_lists", "smarty"],
+                ) if (post.content or "").strip() else ""
+                meta = dict(post.metadata or {})
+                slug = slugify(str(meta.get("slug") or path.stem))
+                item = self._prepare_adventure(meta, body_html=body_html, slug=slug)
+                if not item:
+                    continue
+                if item["slug"] in used_slugs:
+                    item["slug"] = slugify(f"{item['slug']}-{path.stem}")
+                    if body_html:
+                        item["href"] = self.url_for(f"willseys-wonderland/{item['slug']}/index.html")
+                used_slugs.add(item["slug"])
+                adventures.append(item)
+
+        def sort_key(item: dict) -> tuple:
+            dt = item.get("date")
+            if dt is None:
+                return (1, 0.0)
+            return (0, -dt.timestamp())
+
+        adventures.sort(key=sort_key)
+        latest = adventures[0] if adventures else None
+        return {
+            "page": {
+                "kicker": str(page.get("kicker") or "From the pits").strip(),
+                "headline": str(page.get("headline") or "Willseys Wonderland").strip(),
+                "lede": str(
+                    page.get("lede")
+                    or "Our team. Our cars. Our adventures. Straight from the pits."
+                ).strip(),
+            },
+            "adventures": adventures,
+            "latest": latest,
+        }
+
     def write(self, rel: str, content: str | bytes, binary: bool = False) -> None:
+
         path = self.outdir / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         if binary:
@@ -987,6 +1394,9 @@ class SiteBuilder:
         other_home = [i for i in combined if id(i) not in taken]
         home_items = (street_home + other_home)[:homepage_limit]
         sources = sorted({i["source"] for i in home_items})
+        follow = self.load_follow()
+        wonderland = self.load_wonderland()
+        self.env.globals["follow_highlights"] = follow.get("highlights") or []
 
         desc = self.site["description"]
         self.render(
@@ -996,6 +1406,7 @@ class SiteBuilder:
             grudge_board=grudge_board,
             items=home_items,
             sources=sources,
+            wonderland=wonderland,
             page_title=f"{self.site['site_name']} — {self.site['tagline']}",
             page_description=desc,
         )
@@ -1004,7 +1415,10 @@ class SiteBuilder:
             "about.html",
             current="about",
             page_title=f"About {self.site['site_name']}",
-            page_description=f"About {self.site['site_name']}: a lightweight racing news desk with drag racing first and other series alongside it.",
+            page_description=(
+                f"About {self.site['site_name']}: a lightweight racing news desk. "
+                "Outlaw racing leads the card, with drag, dirt, NASCAR, and IMSA right behind."
+            ),
         )
         live = self.load_live(combined)
         self.render(
@@ -1014,11 +1428,41 @@ class SiteBuilder:
             live=live,
             page_title=f"Live — {self.site['site_name']}",
             page_description=(
-                "Street and grudge livestreams from 1320Video, DRAG LENS, "
+                "Outlaw racing livestreams from 1320Video, DRAG LENS, "
                 "Lens 660, and BoostedGT, plus official where-to-watch links "
                 "for NHRA, DIRTVision, and FloRacing."
             ),
         )
+        self.render(
+            "follow.html",
+            "follow/index.html",
+            current="follow",
+            follow=follow,
+            page_title=f"Follow — {self.site['site_name']}",
+            page_description=follow["page"]["lede"],
+        )
+        self.render(
+            "wonderland.html",
+            "willseys-wonderland/index.html",
+            current="wonderland",
+            wonderland=wonderland,
+            page_title=f"Willseys Wonderland — {self.site['site_name']}",
+            page_description=wonderland["page"]["lede"],
+        )
+        for adventure in wonderland["adventures"]:
+            if not adventure.get("body_html"):
+                continue
+            rel = f"willseys-wonderland/{adventure['slug']}/index.html"
+            self.render(
+                "wonderland_post.html",
+                rel,
+                current="wonderland",
+                item=adventure,
+                og_type="article",
+                page_title=f"{adventure['title']} — Willseys Wonderland",
+                page_description=adventure.get("caption") or adventure["title"],
+                og_image=adventure.get("cover") or None,
+            )
         merch = self.load_merch()
         if self.build_merch:
             merch_ctx = dict(
@@ -1039,9 +1483,16 @@ class SiteBuilder:
         )
         sitemap_pages: list[tuple[str, datetime | None]] = [
             ("index.html", datetime.now(self.tz)),
+            ("willseys-wonderland/index.html", datetime.now(self.tz)),
             ("live/index.html", datetime.now(self.tz)),
+            ("follow/index.html", datetime.now(self.tz)),
             ("about.html", None),
         ]
+        for adventure in wonderland["adventures"]:
+            if adventure.get("body_html"):
+                sitemap_pages.append(
+                    (f"willseys-wonderland/{adventure['slug']}/index.html", adventure.get("date"))
+                )
         if self.merch_enabled:
             sitemap_pages.append(("merch/index.html", merch.get("mtime")))
         now_posts = {p["slug"]: p for p in posts}
@@ -1061,7 +1512,8 @@ class SiteBuilder:
 
         for cat in self.categories:
             cat_items = [i for i in combined if i["category"] == cat["id"]][:category_limit]
-            rel = f"category/{cat['id']}/index.html"
+            slug = self.category_slug(cat)
+            rel = f"category/{slug}/index.html"
             self.render(
                 "category.html",
                 rel,
@@ -1073,6 +1525,18 @@ class SiteBuilder:
                 page_description=cat.get("description") or f"{cat['name']} headlines on {self.site['site_name']}.",
             )
             sitemap_pages.append((rel, cat_items[0]["date"] if cat_items else None))
+            if slug != cat["id"]:
+                self.render(
+                    "redirect.html",
+                    f"category/{cat['id']}/index.html",
+                    current="",
+                    robots="noindex,follow",
+                    canonical=self.absolute(rel),
+                    redirect_url=self.url_for(rel),
+                    redirect_name=cat["name"],
+                    page_title=f"{cat['name']} — {self.site['site_name']}",
+                    page_description=f"This section moved to {cat['name']}.",
+                )
 
         self.write_robots()
         self.write_sitemap(sitemap_pages)

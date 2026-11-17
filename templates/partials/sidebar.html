@@ -23,7 +23,7 @@
     <nav class="filter-cats" aria-label="News categories">
       <a class="filter-link{% if current == 'home' %} is-active{% endif %}" href="{{ url_for('index.html') }}" data-filter="all"{% if current == 'home' %} aria-current="page"{% endif %}>All</a>
       {% for cat in categories %}
-      <a class="filter-link{% if current == cat.id %} is-active{% endif %}" href="{{ url_for('category/' + cat.id + '/index.html') }}" data-filter="{{ cat.id }}"{% if current == cat.id %} aria-current="page"{% endif %}>{{ cat.nav }}</a>
+      <a class="filter-link{% if current == cat.id %} is-active{% endif %}" href="{{ category_url(cat) }}" data-filter="{{ cat.id }}"{% if current == cat.id %} aria-current="page"{% endif %}>{{ cat.nav }}</a>
       {% endfor %}
     </nav>
     <label class="filter-check">
@@ -74,4 +74,23 @@
   </div>
 
   <button type="button" class="filter-reset is-hidden" data-filter-reset>Clear filters</button>
+
+  {% if follow_highlights %}
+  <div class="follow-sidebar">
+    <h3>Follow the crew</h3>
+    <ul class="follow-highlights">
+      {% for account in follow_highlights %}
+      <li>
+        <span class="follow-highlight-name">{{ account.name }}</span>
+        <span class="follow-highlight-plats">
+          {% for plat in account.platforms %}
+          <a href="{{ plat.url }}" rel="noopener noreferrer" target="_blank">{{ plat.label }}</a>{% if not loop.last %} · {% endif %}
+          {% endfor %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="follow-sidebar-more"><a href="{{ url_for('follow/index.html') }}">See all</a></p>
+  </div>
+  {% endif %}
 </aside>

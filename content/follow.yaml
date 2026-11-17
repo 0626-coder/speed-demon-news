@@ -1,0 +1,147 @@
+# Accounts people can follow from Speed-Demon News.
+# Add a person or team here, then rebuild (`./build.sh` locally, or push
+# to main for the live site). Only add URLs you have confirmed are theirs.
+#
+# Fields:
+#   name:       Display name
+#   category:   One of the site category ids: street (Outlaw Racing), drag,
+#               dirt, nascar, imsa
+#   note:       Optional short, factual blurb
+#   featured:   true to include the account in the homepage sidebar highlights
+#   platforms:  Only include platforms you have verified. Supported keys:
+#               youtube, x, instagram, facebook, tiktok
+#               Each value must be a full https:// URL.
+#   enabled:    false to hide without deleting
+#
+# The Follow page groups cards by category, Outlaw Racing first.
+# Every link opens in a new tab with rel="noopener noreferrer".
+
+page:
+  kicker: The crew
+  headline: Follow
+  lede: >-
+    Accounts we watch, and that you can follow too. We add people here as we
+    go. Every link goes to their official page.
+
+accounts:
+  - name: 1320Video
+    category: street
+    featured: true
+    enabled: true
+    note: Street, no-prep, and grudge video from 1320Video.
+    platforms:
+      youtube: https://www.youtube.com/@1320video
+      x: https://x.com/1320video
+      instagram: https://www.instagram.com/1320video/
+      facebook: https://www.facebook.com/1320videos
+      tiktok: https://www.tiktok.com/@1320videoofficial
+
+  - name: DRAG LENS
+    category: street
+    featured: true
+    enabled: true
+    note: Drag and grudge video from DRAG LENS.
+    platforms:
+      youtube: https://www.youtube.com/@DragLens
+
+  - name: Lens 660
+    category: street
+    featured: false
+    enabled: true
+    note: The other "660 Drag Lens" channel.
+    platforms:
+      youtube: https://www.youtube.com/@Lens660
+
+  - name: BoostedGT
+    category: street
+    featured: false
+    enabled: true
+    note: Ryan Martin's BoostedGT channel.
+    platforms:
+      youtube: https://www.youtube.com/@BoostedGT
+      instagram: https://www.instagram.com/boostedgt/
+      facebook: https://www.facebook.com/boostedgt
+
+  - name: Street Outlaws
+    category: street
+    featured: true
+    enabled: true
+    note: The official Street Outlaws accounts.
+    platforms:
+      x: https://x.com/StreetOutlaws
+      instagram: https://www.instagram.com/stoutlaws/
+      facebook: https://www.facebook.com/streetoutlaws
+
+  - name: No Prep Racing
+    category: street
+    featured: false
+    enabled: true
+    note: Official No Prep Racing (noprep.com).
+    platforms:
+      instagram: https://www.instagram.com/noprepcom/
+
+  - name: NHRA
+    category: drag
+    featured: true
+    enabled: true
+    note: The National Hot Rod Association.
+    platforms:
+      youtube: https://www.youtube.com/@NHRA
+      x: https://x.com/NHRA
+      instagram: https://www.instagram.com/nhra/
+      facebook: https://www.facebook.com/nhra
+
+  - name: World of Outlaws
+    category: dirt
+    featured: true
+    enabled: true
+    note: World of Outlaws Sprint Cars and Late Models.
+    platforms:
+      youtube: https://www.youtube.com/@WorldofOutlaws
+      x: https://x.com/WorldofOutlaws
+      facebook: https://www.facebook.com/WorldofOutlaws
+
+  - name: DIRTcar
+    category: dirt
+    featured: false
+    enabled: true
+    note: Official DIRTcar Racing.
+    platforms:
+      youtube: https://www.youtube.com/@DIRTcarRacing
+      instagram: https://www.instagram.com/dirtcar_official/
+
+  - name: FloRacing
+    category: dirt
+    featured: false
+    enabled: true
+    note: Official FloRacing streaming and dirt coverage.
+    platforms:
+      x: https://x.com/FloRacing
+      instagram: https://www.instagram.com/floracing/
+      facebook: https://www.facebook.com/FloRacing.tv
+
+  - name: Lucas Oil Late Model Dirt Series
+    category: dirt
+    featured: false
+    enabled: true
+    note: Official Lucas Oil Late Model Dirt Series.
+    platforms:
+      x: https://x.com/lucasdirt
+
+  - name: High Limit Racing
+    category: dirt
+    featured: false
+    enabled: true
+    note: Official Interstate Batteries High Limit Racing.
+    platforms:
+      instagram: https://www.instagram.com/highlimitracing/
+      facebook: https://www.facebook.com/HighLimitRacing
+
+  - name: USAC
+    category: dirt
+    featured: false
+    enabled: true
+    note: The United States Auto Club.
+    platforms:
+      instagram: https://www.instagram.com/usacnation/
+      facebook: https://www.facebook.com/usacracing/

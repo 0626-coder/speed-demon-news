@@ -5,17 +5,47 @@
   {% include "partials/sidebar.html" %}
 
   <div class="news-main">
+    {% if wonderland %}
+    <section class="wonderland-band" aria-label="Willseys Wonderland">
+      {% if wonderland.latest %}
+      <div class="wonderland-band-media">
+        {% if wonderland.latest.cover_thumb or wonderland.latest.cover %}
+        <img src="{{ wonderland.latest.cover_thumb or wonderland.latest.cover }}" alt="{{ wonderland.latest.cover_alt or wonderland.latest.title }}">
+        {% else %}
+        <div class="wonderland-band-fallback" aria-hidden="true"></div>
+        {% endif %}
+      </div>
+      <div class="wonderland-band-copy">
+        <p class="kicker">{{ wonderland.page.kicker }}</p>
+        <h2>Willseys Wonderland</h2>
+        <p class="wonderland-band-title">{{ wonderland.latest.title }}</p>
+        {% if wonderland.latest.date_display %}<p class="wonderland-band-date">{{ wonderland.latest.date_display }}</p>{% endif %}
+        {% if wonderland.latest.caption %}<p class="excerpt">{{ wonderland.latest.caption }}</p>{% endif %}
+        <p><a class="wonderland-cta" href="{{ url_for('willseys-wonderland/index.html') }}">Go to Willseys Wonderland</a></p>
+      </div>
+      {% else %}
+      <div class="wonderland-band-copy wonderland-band-empty">
+        <p class="kicker">{{ wonderland.page.kicker }}</p>
+        <h2>Willseys Wonderland</h2>
+        <p class="wonderland-band-title">First adventure coming soon</p>
+        <p class="excerpt">{{ wonderland.page.lede }}</p>
+        <p><a class="wonderland-cta" href="{{ url_for('willseys-wonderland/index.html') }}">Go to Willseys Wonderland</a></p>
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
     <header class="news-intro">
-      <p class="kicker">Street first. Then the track.</p>
+      <p class="kicker">Outlaw racing first. Then the track.</p>
       <h1>{{ site.site_name }}</h1>
-      <p class="lede">{{ site.tagline }} 1320Video, Drag Lens, no-prep, and the grudge board lead the homepage. Drag strip, dirt, and the big series follow.</p>
+      <p class="lede">{{ site.tagline }} 1320Video, DRAG LENS, no-prep, and the Grudge Board lead the homepage. The drag strip, dirt, and the big series follow.</p>
     </header>
 
     {% if grudge_board %}
     <div class="featured-block" data-featured-block>
       <div class="section-head">
         <h2>Grudge Board</h2>
-        <a href="{{ url_for('category/street/index.html') }}">Callouts &amp; beef</a>
+        <a href="{{ category_url('street') }}">Callouts &amp; Beef</a>
       </div>
       <div class="grid featured-grid">
         {% for item in grudge_board %}

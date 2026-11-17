@@ -32,8 +32,10 @@
         </span>
       </a>
       <nav class="nav" aria-label="Primary">
+        <a class="nav-wonderland" href="{{ url_for('willseys-wonderland/index.html') }}" {% if current == 'wonderland' %}aria-current="page"{% endif %}>Willseys Wonderland</a>
         <a href="{{ url_for('index.html') }}" {% if current == 'home' %}aria-current="page"{% endif %}>Latest</a>
         <a class="nav-live" href="{{ url_for('live/index.html') }}" {% if current == 'live' %}aria-current="page"{% endif %}><span class="live-dot" aria-hidden="true"></span>Live</a>
+        <a href="{{ url_for('follow/index.html') }}" {% if current == 'follow' %}aria-current="page"{% endif %}>Follow</a>
         {% if merch_enabled %}
         <a href="{{ url_for('merch/index.html') }}" {% if current == 'merch' %}aria-current="page"{% endif %}>Merch</a>
         {% endif %}
@@ -47,19 +49,21 @@
   <footer class="site-footer">
     <div class="wrap footer-inner">
       <div>
-        <p><strong>{{ site.site_name }}</strong> — headlines with the source on the card, plus the occasional original recap. No trackers, no ads in this draft.</p>
+        <p><strong>{{ site.site_name }}</strong> — headlines with the source on the card, plus the occasional original recap. No trackers, no ads.</p>
         <p>Excerpts come from public RSS/Atom feeds. The full story stays at the original site or channel.</p>
         <nav class="footer-cats" aria-label="Categories">
           {% for cat in categories %}
-          <a href="{{ url_for('category/' + cat.id + '/index.html') }}">{{ cat.nav }}</a>{% if not loop.last %} · {% endif %}
+          <a href="{{ category_url(cat) }}">{{ cat.nav }}</a>{% if not loop.last %} · {% endif %}
           {% endfor %}
         </nav>
       </div>
       <p>
+        <a href="{{ url_for('willseys-wonderland/index.html') }}">Willseys Wonderland</a> ·
         <a href="{{ url_for('live/index.html') }}">Live</a> ·
+        <a href="{{ url_for('follow/index.html') }}">Follow</a> ·
         <a href="{{ url_for('feed.xml') }}">RSS</a> ·
         <a href="{{ url_for('sitemap.xml') }}">Sitemap</a> ·
-        {% if merch_enabled %}<a href="{{ url_for('merch/index.html') }}">Merch</a> ·{% endif %}
+        {% if merch_enabled %}<a href="{{ url_for('merch/index.html') }}">Merch</a> · {% endif %}
         <a href="{{ url_for('about.html') }}">About</a>
       </p>
     </div>

@@ -1,0 +1,33 @@
+# Willseys Wonderland — the Speed-Demon News team page.
+# Add an adventure here or as a Markdown file in content/wonderland/, then
+# rebuild (`./build.sh` locally, or push to main for the live site).
+# The bot will add entries when you upload photos or video.
+#
+# Media files go in static/wonderland/.
+#   Photos: JPG, PNG, or WebP. Prefer under 5 MB. The build resizes them
+#           to a max of 1600px wide and makes a thumbnail (if Pillow is
+#           installed, which it is in requirements.txt).
+#   Video:  MP4 (H.264), preferably under 50 MB. Longer clips are better
+#           as a YouTube link. GitHub will reject files over 100 MB.
+#   YouTube: a video id, or a full watch / youtu.be / shorts / embed URL.
+#
+# Adventure fields:
+#   date:    YYYY-MM-DD (optional, but newest-first sorting uses it)
+#   title:   Required
+#   caption: Optional short text shown on the card and under the media
+#   tags:    Optional list of short labels
+#   cover:   Optional image filename or URL; defaults to the first image
+#   media:   List of {type, src, alt?, caption?}
+#            type is image, video, or youtube
+#   enabled: false to hide without deleting
+#
+# Markdown posts in content/wonderland/ use the same front matter
+# (title, date, cover, media, tags) plus a write-up in the body.
+# Those get their own page under /willseys-wonderland/<slug>/.
+
+page:
+  kicker: From the pits
+  headline: Willseys Wonderland
+  lede: Our team. Our cars. Our adventures. Straight from the pits.
+
+adventures: []

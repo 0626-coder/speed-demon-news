@@ -1,12 +1,12 @@
 # Final site name: Speed-Demon News
 site_name: "Speed-Demon News"
 site_name_is_placeholder: false
-tagline: "Street and grudge up front. Then the strip, the dirt, and the big series."
+tagline: "Outlaw racing up front. Then the strip, the dirt, and the big series."
 description: >-
-  A no-frills racing news pile. Street, no-prep, and grudge lead the card,
-  with drag racing and NHRA, dirt of every class, and the big-series stuff
-  right behind. Headlines and short excerpts from public feeds. Original
-  recaps only when we can stick to the source. No trackers.
+  A no-frills racing news pile. Outlaw racing — no-prep and grudge — leads
+  the card, with drag racing and NHRA, dirt of every class, and the
+  big-series stuff right behind. Headlines and short excerpts from public
+  feeds. Original recaps only when we can stick to the source. No trackers.
 # Public URL used by production builds (GitHub Actions, or ./build.sh --prod).
 # A plain ./build.sh / python build.py still writes links for
 # http://127.0.0.1:8080/ so the local preview keeps working.

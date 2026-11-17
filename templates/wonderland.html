@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero wonderland-hero">
+  <div class="wrap">
+    <p class="kicker">{{ wonderland.page.kicker }}</p>
+    <h1>{{ wonderland.page.headline }}</h1>
+    <p class="lede">{{ wonderland.page.lede }}</p>
+  </div>
+</section>
+
+<div class="wrap wonderland-page">
+  {% if wonderland.adventures %}
+  <div class="section-head">
+    <h2>Adventures</h2>
+    <p>{{ wonderland.adventures|length }} so far</p>
+  </div>
+  <div class="wonderland-adventures">
+    {% for item in wonderland.adventures %}
+    <article class="wonderland-adventure" id="{{ item.slug }}">
+      <header class="wonderland-adventure-head">
+        {% if item.date_display %}<p class="kicker">{{ item.date_display }}</p>{% endif %}
+        <h2>
+          {% if item.href %}
+          <a href="{{ item.href }}">{{ item.title }}</a>
+          {% else %}
+          {{ item.title }}
+          {% endif %}
+        </h2>
+        {% if item.caption %}<p class="lede">{{ item.caption }}</p>{% endif %}
+        {% if item.tags %}
+        <p class="card-meta">
+          {% for tag in item.tags %}
+          <span class="pill">{{ tag }}</span>
+          {% endfor %}
+        </p>
+        {% endif %}
+      </header>
+      {% if item.body_html %}
+      <div class="article-body wonderland-writeup">
+        {{ item.body_html | safe }}
+      </div>
+      {% endif %}
+      {% if item.media %}
+      <div class="wonderland-gallery" data-wonderland-gallery>
+        {% for media in item.media %}
+          {% if media.type == 'image' %}
+          <figure class="wonderland-media wonderland-image">
+            <button type="button" class="wonderland-lightbox-btn" data-lightbox-src="{{ media.src }}" data-lightbox-alt="{{ media.alt or item.title }}" aria-label="View photo: {{ media.alt or item.title }}">
+              <img src="{{ media.thumb or media.src }}" alt="{{ media.alt or item.title }}" loading="lazy">
+            </button>
+            {% if media.caption %}<figcaption>{{ media.caption }}</figcaption>{% endif %}
+          </figure>
+          {% elif media.type == 'video' %}
+          <figure class="wonderland-media wonderland-video">
+            <video controls preload="metadata" {% if media.poster %}poster="{{ media.poster }}"{% endif %}>
+              <source src="{{ media.src }}" type="{{ media.mime or 'video/mp4' }}">
+              Sorry, this browser can't play this video. <a href="{{ media.src }}">Download it instead</a>.
+            </video>
+            {% if media.caption %}<figcaption>{{ media.caption }}</figcaption>{% endif %}
+          </figure>
+          {% elif media.type == 'youtube' and media.video_id %}
+          <figure class="wonderland-media wonderland-youtube">
+            <div class="thumb-wrap">
+              <button type="button" class="thumb-btn" data-video="{{ media.video_id }}" aria-label="Play video: {{ media.caption or item.title }}">
+                <img src="{{ media.thumb or ('https://i.ytimg.com/vi/' + media.video_id + '/hqdefault.jpg') }}" alt="" loading="lazy" width="480" height="270">
+                <span class="play-badge" aria-hidden="true">Play</span>
+              </button>
+            </div>
+            {% if media.caption %}<figcaption>{{ media.caption }}</figcaption>{% endif %}
+          </figure>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="wonderland-empty-card">
+    <p class="kicker">{{ wonderland.page.kicker }}</p>
+    <h2>First adventure coming soon</h2>
+    <p class="excerpt">Photos and video from the team will show up here as we go. Nothing invented, no stock shots — just what we upload.</p>
+  </div>
+  {% endif %}
+</div>
+
+<div class="wonderland-lightbox" data-lightbox hidden>
+  <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close photo">&times;</button>
+  <button type="button" class="lightbox-prev" data-lightbox-prev aria-label="Previous photo">‹</button>
+  <figure>
+    <img data-lightbox-image alt="">
+    <figcaption data-lightbox-caption></figcaption>
+  </figure>
+  <button type="button" class="lightbox-next" data-lightbox-next aria-label="Next photo">›</button>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static/js/filters.js') }}" defer></script>
+<script src="{{ url_for('static/js/wonderland.js') }}" defer></script>
+{% endblock %}

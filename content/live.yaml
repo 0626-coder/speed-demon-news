@@ -3,7 +3,7 @@
 #
 # YouTube channels:
 #   name, youtube_channel_id (required for the player), optional handle, category, note
-#   section: street  — first block (Street / Grudge livestreams)
+#   section: street  — first block (Outlaw Racing livestreams)
 #   section: other   — "Other live channels" at the bottom
 #   The page lazy-loads:
 #     https://www.youtube-nocookie.com/embed/live_stream?channel=CHANNEL_ID
@@ -21,7 +21,7 @@ page:
   kicker: They're live. Or they will be.
   headline: Live
   lede: >-
-    Street and grudge streams lead this page. When a channel is broadcasting,
+    Outlaw racing streams lead this page. When a channel is broadcasting,
     the player loads right here after you tap in. When they're dark, YouTube
     will say so — their latest videos sit underneath, and you can jump to the
     channel's live or past-streams page. Track racing that lives on TV or a
@@ -29,7 +29,7 @@ page:
     embed those streams, and we do not invent race dates.
 
 channels:
-  - name: 1320video
+  - name: 1320Video
     youtube_channel_id: UC0PXqiud6dbwOAk8RvslgpQ
     handle: 1320video
     category: street

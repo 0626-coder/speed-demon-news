@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero follow-hero">
+  <div class="wrap">
+    <p class="kicker">{{ follow.page.kicker }}</p>
+    <h1>{{ follow.page.headline }}</h1>
+    <p class="lede">{{ follow.page.lede }}</p>
+  </div>
+</section>
+
+<div class="wrap follow-page">
+  {% if follow.groups %}
+    {% for group in follow.groups %}
+    <div class="section-head">
+      <h2>{{ group.name }}</h2>
+    </div>
+    <div class="follow-grid">
+      {% for account in group.accounts %}
+      <article class="card follow-card follow-card-{{ account.category }}">
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="pill pill-{{ account.category }}">{{ account.category_name }}</span>
+          </div>
+          <h3>{{ account.name }}</h3>
+          {% if account.note %}<p class="excerpt">{{ account.note }}</p>{% endif %}
+          <div class="platform-btns">
+            {% for plat in account.platforms %}
+            <a class="platform-btn platform-{{ plat.key }}" href="{{ plat.url }}" rel="noopener noreferrer" target="_blank">
+              {% include "partials/platform_icon.html" %}
+              <span>{{ plat.label }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  {% else %}
+  <p class="empty">No accounts listed yet. Add them in <code>content/follow.yaml</code>.</p>
+  {% endif %}
+</div>
+{% endblock %}

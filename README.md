@@ -2,19 +2,21 @@
 
 A racing news site rebuilt with one command. Headlines come from public RSS/Atom feeds. Original articles are Markdown files. It does not create accounts, post to social media, or talk to a paid service.
 
-The site name is **Speed-Demon News**. The homepage leads with street, no-prep, and grudge (the Grudge Board), then drag strip / NHRA, dirt, and the big series. The live site is on GitHub Pages at [https://0626-coder.github.io/speed-demon-news/](https://0626-coder.github.io/speed-demon-news/). No custom domain has been purchased.
+The site name is **Speed-Demon News**. **Willseys Wonderland** is the team page and sits first in the top nav; the homepage opens with a band that points there. The news pile leads with Outlaw Racing (the Grudge Board), then drag strip / NHRA, dirt, NASCAR, and IMSA. The live site is on GitHub Pages at [https://0626-coder.github.io/speed-demon-news/](https://0626-coder.github.io/speed-demon-news/). No custom domain has been purchased.
 
 The site is built for someone with little daily spare time: fetch headlines automatically, write a post only when you want to, and host it later for free.
 
 ## What you get
 
-- Homepage of latest headlines, with **Street / Grudge (Grudge Board)** featured first and street stories ranked first in the main grid. The top nav is just **Latest**, **Live** (red dot), and **About**. Categories live in a left sidebar.
+- Homepage of latest headlines. A **Willseys Wonderland** band sits at the top of the news column. **Outlaw Racing (Grudge Board)** is featured next, and outlaw stories are ranked first in the main grid. The top nav is **Willseys Wonderland**, **Latest**, **Live** (red dot), **Follow**, and **About**. Categories live in a left sidebar.
 - News pages (home and every category) use a full-width layout: sticky sidebar filters on the left, a multi-column headline grid on the right. On phones, filters collapse into a **Filters** button that opens a drawer.
-- Sidebar filters: Category (Street / Grudge first, then Drag, Dirt, NASCAR, F1, IndyCar, IMSA — also real pages for SEO and no-JS), Dirt class (sprints, late models, modifieds, midgets/USAC, micros, stock cars, karts), Source, Type (Articles / Videos / Our stories), Date (Today, This week, All), a search box, and an Engines / Tech toggle. Filtering is client-side.
+- Sidebar filters: Category (Outlaw Racing first, then Drag, Dirt, NASCAR, IMSA — also real pages for SEO and no-JS), Dirt class (sprints, late models, modifieds, midgets/USAC, micros, stock cars, karts), Source, Type (Articles / Videos / Our stories), Date (Today, This week, All), a search box, and an Engines / Tech toggle. Filtering is client-side. A compact **Follow the crew** block sits under the filters.
 - YouTube items as cards with a thumbnail and channel name; click to lazy-load a YouTube embed, or open the video on YouTube
 - Original articles mixed into the homepage and the matching category; recap drafts stay unpublished until approved
-- **Live page** with lazy-loaded YouTube livestream players for 1320video, DRAG LENS, Lens 660, and BoostedGT, plus official where-to-watch links for NHRA, DIRTVision, and FloRacing
-- About page, basic SEO (title, meta description, Open Graph), `sitemap.xml`, `robots.txt`, and an RSS feed of this site’s aggregated items
+- **Willseys Wonderland** (`/willseys-wonderland/`), the team adventures page: a photo and video gallery driven by `content/wonderland.yaml` and optional Markdown posts in `content/wonderland/`
+- **Live page** with lazy-loaded YouTube livestream players for 1320Video, DRAG LENS, Lens 660, and BoostedGT, plus official where-to-watch links for NHRA, DIRTVision, and FloRacing
+- **Follow page** (`/follow/`) with official social accounts grouped Outlaw Racing first, then Drag, Dirt, and the rest. Add people in `content/follow.yaml`.
+- About page, basic SEO (title, meta description, Open Graph), `sitemap.xml`, `robots.txt`, and an RSS feed of this site's aggregated items
 - Merch page for shirts and hats, hidden until you flip `merch.enabled` on in `site.yaml`
 - Dark, mobile-friendly, a little grittier, no trackers
 
@@ -38,8 +40,11 @@ racing-news-site/
     images/             Optional local images referenced by posts
     merch.yaml          Merch catalog (shirts and hats). Page stays hidden until enabled
     live.yaml           Live page channels and official where-to-watch links
+    follow.yaml         Follow page accounts and official social URLs
+    wonderland.yaml     Willseys Wonderland gallery entries
+    wonderland/         Optional Markdown adventure posts for the team page
   templates/            Jinja HTML templates
-  static/               CSS, tiny filter script, logo
+  static/               CSS, scripts, logo, and team media in static/wonderland/
   public/               Generated site (safe to delete; rebuild recreates it)
 ```
 
@@ -101,7 +106,7 @@ image:
 Your article in Markdown. Do not paste a full article from another site.
 ```
 
-`category` must be one of: `drag`, `nascar`, `f1`, `indycar`, `imsa`, `dirt`.
+`category` must be one of: `street` (Outlaw Racing; the public URL is `/category/outlaw-racing/`), `drag`, `dirt`, `nascar`, `imsa`.
 
 `image` is optional. Use a full `https://…` URL, or a filename that lives in `content/images/`.
 
@@ -187,11 +192,11 @@ Kicker, headline, lede, and the “designs drop soon” note at the bottom of th
 
 ## Live page
 
-The public Live page is at `/live/` (nav item **Live**, right after Latest, with a red pulsing dot). It is in the footer and in `sitemap.xml`.
+The public Live page is at `/live/` (nav item **Live**, after Latest, with a red pulsing dot). It is in the footer and in `sitemap.xml`.
 
-### Street / Grudge livestreams (first)
+### Outlaw Racing livestreams (first)
 
-The first section embeds YouTube live players for 1320video, DRAG LENS, Lens 660, and BoostedGT. Nothing loads from YouTube until you click **Watch live / latest** on a card. The player uses the privacy-enhanced embed:
+The first section embeds YouTube live players for 1320Video, DRAG LENS, Lens 660, and BoostedGT. Nothing loads from YouTube until you click **Watch live / latest** on a card. The player uses the privacy-enhanced embed:
 
 ```
 https://www.youtube-nocookie.com/embed/live_stream?channel=CHANNEL_ID
@@ -219,8 +224,8 @@ Edit `content/live.yaml` and rebuild. YouTube channels use:
 | `name` | Channel name as it should appear |
 | `youtube_channel_id` | The `UC…` id (required for the player). Must be a 24-character YouTube channel id |
 | `handle` | Optional `@handle` without the at-sign, used for `/live` and `/streams` links |
-| `category` | One of the site categories, usually `street` |
-| `section` | `street` (first block) or `other` (Other live channels) |
+| `category` | One of the site category ids, usually `street` (shown as Outlaw Racing) |
+| `section` | `street` (first block, Outlaw Racing livestreams) or `other` (Other live channels) |
 | `note` | Short, factual blurb |
 | `watch_url` | Optional. Use this instead of a channel id for a link-only card |
 | `enabled` | `false` to hide without deleting |
@@ -228,16 +233,61 @@ Edit `content/live.yaml` and rebuild. YouTube channels use:
 Official TV or paid-stream cards go under `watch:` with `name`, `category`, `note`, and a `links:` list of `{label, url}` (https only). Put extra YouTube channels in `other_channels:` (same fields as `channels:`).
 
 
+## Follow page
 
-## Feeds in this draft
+The public Follow page is at `/follow/` (nav item **Follow**, after Live). A short **Follow the crew** list also appears in the homepage and category sidebars. The page is in the footer and in `sitemap.xml`.
+
+To add someone, edit `content/follow.yaml` and rebuild. Only add URLs you have confirmed belong to that person or team. Do not guess handles.
+
+| Field | What it is |
+| --- | --- |
+| `name` | Display name |
+| `category` | Site category id: `street` (Outlaw Racing), `drag`, `dirt`, `nascar`, or `imsa` |
+| `note` | Optional short, factual blurb |
+| `featured` | `true` to include the account in the sidebar highlights |
+| `platforms` | A map of platform keys to full `https://` URLs. Supported keys: `youtube`, `x`, `instagram`, `facebook`, `tiktok`. Leave a platform out if you cannot verify it |
+| `enabled` | `false` to hide without deleting |
+
+Cards are grouped by category, Outlaw Racing first. Every link opens in a new tab with `rel="noopener noreferrer"`.
+
+## Willseys Wonderland
+
+The team page is at `/willseys-wonderland/` and is the first item in the top nav. The homepage opens with a Willseys Wonderland band (the latest adventure, or a “First adventure coming soon” card) and a button to that page. It is in the footer and in `sitemap.xml`.
+
+There is no invented media and no stock photography. Until real photos or video are added, the page shows only the coming-soon card.
+
+### Add photos or video
+
+1. Put media files in `static/wonderland/`.
+2. Add an entry to `content/wonderland.yaml` (or a Markdown file in `content/wonderland/`).
+3. Rebuild with `./build.sh` (or push to `main` for the live site).
+
+The bot will do those steps when you upload media.
+
+**File guidance**
+
+- Photos: JPG, PNG, or WebP, preferably under 5 MB. The build resizes images to a maximum of 1,600 pixels on the long edge and writes a 640px thumbnail (Pillow is in `requirements.txt`).
+- Video: MP4 (H.264), preferably under 50 MB. GitHub will reject files over 100 MB. Longer clips are better as a YouTube link.
+- YouTube: a video id, or a full watch / youtu.be / shorts / embed URL. The player lazy-loads with the privacy-enhanced embed, same as the rest of the site.
+
+YAML adventure fields: `date` (YYYY-MM-DD), `title`, optional `caption`, optional `tags`, optional `cover` (defaults to the first image), and `media` (a list of `{type, src, alt?, caption?}`). `type` is `image`, `video`, or `youtube`. Set `enabled: false` to hide an entry without deleting it.
+
+Markdown posts in `content/wonderland/` use the same front matter plus a write-up in the body. Those get their own page at `/willseys-wonderland/<slug>/` and are listed newest first with the YAML entries.
+
+Photos open in a lightbox. Local video plays in an HTML5 `<video>` player. YouTube items use the same click-to-load embed as the news cards.
+
+
+
+
+## Feeds on this site
 
 Each of these was checked with curl and returned real feed items before being added. YouTube's public channel RSS (`https://www.youtube.com/feeds/videos.xml?channel_id=...`) can 404 or 500 intermittently; the builder retries those feeds. The build script drops a feed for that run if it still fails, and keeps the rest.
 
-**Street / Grudge (featured, first after Latest) — "Grudge Board"**
+**Outlaw Racing (featured) — "Grudge Board"**
 
-The homepage featured section. Street / Grudge is the first category in the sidebar, right after All.
+The homepage featured news section, just under the Willseys Wonderland band. Outlaw Racing is the first category in the sidebar, right after All. The public URL is `/category/outlaw-racing/`. The old `/category/street/` address redirects there.
 
-- 1320video (YouTube, channel ID `UC0PXqiud6dbwOAk8RvslgpQ`) — https://www.youtube.com/feeds/videos.xml?channel_id=UC0PXqiud6dbwOAk8RvslgpQ — also https://www.youtube.com/@1320video
+- 1320Video (YouTube, channel ID `UC0PXqiud6dbwOAk8RvslgpQ`) — https://www.youtube.com/feeds/videos.xml?channel_id=UC0PXqiud6dbwOAk8RvslgpQ — also https://www.youtube.com/@1320video
 - 1320Video Blog — https://1320video.com/blogs/news.atom
 - DRAG LENS (YouTube, channel ID `UCNgmfWYknbb-qhzQXQkHuLQ`) — https://www.youtube.com/feeds/videos.xml?channel_id=UCNgmfWYknbb-qhzQXQkHuLQ — also https://www.youtube.com/@DragLens. The name "660 Drag Lens" matched two real channels, so both DRAG LENS and Lens 660 are included.
 - Lens 660 (YouTube, channel ID `UC_5FQcJ-B9sbm7NCc86KTYA`) — https://www.youtube.com/feeds/videos.xml?channel_id=UC_5FQcJ-B9sbm7NCc86KTYA — also https://www.youtube.com/@Lens660
@@ -270,9 +320,9 @@ Second on the homepage, after the Grudge Board.
 - Eldora Speedway — https://www.eldoraspeedway.com/feed
 - eKartingNews — https://www.ekartingnews.com/feed (karts)
 
-**NASCAR, Formula 1, IndyCar, IMSA**
+**NASCAR and IMSA**
 
-Same working feeds as the first draft (Frontstretch, Motorsport.com, Crash.net, official F1, RaceFans, RACER, Sportscar365). Official F1 items often omit dates; those cards show “Date not listed in feed.”
+Working feeds: Frontstretch, Motorsport.com NASCAR, Crash.net NASCAR, Motorsport.com IMSA, and Sportscar365. Formula 1 and IndyCar categories and their feeds were removed from the site.
 
 Headline cards use the title, date, source name, and a short excerpt taken from the feed’s summary/description only. Video cards add a thumbnail and the channel name. Full articles and full videos stay at the source. Every aggregated card links out.
 
@@ -312,7 +362,7 @@ If an official series feed or YouTube RSS comes back later, add it in `feeds.yam
 
 ## Social-only pages (not included)
 
-Instagram, Facebook, and TikTok do not offer public feeds, and they were not scraped. These matter to the street/grudge and dirt scenes but cannot be pulled in automatically:
+Instagram, Facebook, and TikTok do not offer public feeds, and they were not scraped. These matter to the outlaw racing and dirt scenes but cannot be pulled in automatically. Official links we have confirmed are listed on the Follow page instead of being scraped:
 
 - 1320Video on Instagram and Facebook (the YouTube channel and the 1320video.com blog *are* included)
 - Street Outlaws / No Prep Kings official Instagram, Facebook, and TikTok
@@ -342,7 +392,7 @@ A GitHub Actions workflow named **Build and deploy** (`.github/workflows/pages.y
 - when started by hand (`workflow_dispatch`)
 - on a schedule three times a day: `0 13,18,23 * * *` UTC, which is 7am / 12pm / 5pm America/Chicago during CST, and 8am / 1pm / 6pm during CDT
 
-The Live page is public at `/live/`. The merch page stays hidden until `merch.enabled` is true in `site.yaml`. Draft posts in `content/posts` (`draft: true`) stay in the repo source but are not rendered on the site.
+Willseys Wonderland is public at `/willseys-wonderland/`. The Follow page is public at `/follow/`. The Live page is public at `/live/`. The merch page stays hidden until `merch.enabled` is true in `site.yaml`. Draft posts in `content/posts` (`draft: true`) stay in the repo source but are not rendered on the site.
 
 No custom domain is attached. A domain can be added later at a registrar if you want one; nothing has been purchased.
 
